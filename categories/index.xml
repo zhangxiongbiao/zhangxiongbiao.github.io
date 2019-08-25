@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Even - A super concise theme for Hugo</title>
-    <link>https://zhangxiongbiao.github.io/categories.html</link>
+    <link>http://zhangxiongbiao.com/categories.html</link>
     <description>Recent content in Categories on Even - A super concise theme for Hugo</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Sun, 25 Aug 2019 01:37:56 +0800</lastBuildDate>
     
-	<atom:link href="https://zhangxiongbiao.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://zhangxiongbiao.com/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hadoop</title>
-      <link>https://zhangxiongbiao.github.io/categories/hadoop.html</link>
+      <link>http://zhangxiongbiao.com/categories/hadoop.html</link>
       <pubDate>Sun, 25 Aug 2019 01:37:56 +0800</pubDate>
       
-      <guid>https://zhangxiongbiao.github.io/categories/hadoop.html</guid>
+      <guid>http://zhangxiongbiao.com/categories/hadoop.html</guid>
       <description></description>
     </item>
     
