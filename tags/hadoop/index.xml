@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hadoop on Even - A super concise theme for Hugo</title>
+    <link>http://zhangxiongbiao.com/tags/hadoop.html</link>
+    <description>Recent content in Hadoop on Even - A super concise theme for Hugo</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 25 Aug 2019 01:37:56 +0800</lastBuildDate>
+    
+	<atom:link href="http://zhangxiongbiao.com/tags/hadoop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>CDH5安装</title>
+      <link>http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%AE%89%E8%A3%85.html</link>
+      <pubDate>Sun, 25 Aug 2019 01:37:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%AE%89%E8%A3%85.html</guid>
+      <description>01-Cloudera Manager及CDH安装 0. 简述 相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点： * CDH 相对稳定 * CDH 解决了 Hadoop 生态圈各组件</description>
+    </item>
+    
+  </channel>
+</rss>
