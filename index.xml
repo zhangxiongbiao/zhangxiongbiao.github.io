@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Even - A super concise theme for Hugo</title>
+    <title>张雄彪的博客</title>
     <link>http://zhangxiongbiao.com/</link>
-    <description>Recent content on Even - A super concise theme for Hugo</description>
+    <description>Recent content on 张雄彪的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Aug 2019 01:37:56 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 25 Aug 2019 20:37:56 +0800</lastBuildDate>
     
 	<atom:link href="http://zhangxiongbiao.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>http://zhangxiongbiao.com/about.html</guid>
       <description>Hi~ GitHub</description>
+    </item>
+    
+    <item>
+      <title>CDH5开启Kerberos认证</title>
+      <link>http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html</link>
+      <pubDate>Sun, 25 Aug 2019 20:37:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html</guid>
+      <description>1. 安装KDC服务 参考KDC安装 2. 拷贝JCE_POLICY文件 将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*j</description>
     </item>
     
     <item>

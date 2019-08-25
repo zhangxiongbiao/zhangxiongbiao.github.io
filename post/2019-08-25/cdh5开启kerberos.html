@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CDH5开启Kerberos认证 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. 安装KDC服务 参考KDC安装 2. 拷贝JCE_POLICY文件 将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*j" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="CDH5开启Kerberos认证" />
+<meta property="og:description" content="1. 安装KDC服务 参考KDC安装 2. 拷贝JCE_POLICY文件 将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*j" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html" />
+<meta property="article:published_time" content="2019-08-25T20:37:56+08:00" />
+<meta property="article:modified_time" content="2019-08-25T20:37:56+08:00" />
+<meta itemprop="name" content="CDH5开启Kerberos认证">
+<meta itemprop="description" content="1. 安装KDC服务 参考KDC安装 2. 拷贝JCE_POLICY文件 将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*j">
+
+
+<meta itemprop="datePublished" content="2019-08-25T20:37:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-25T20:37:56&#43;08:00" />
+<meta itemprop="wordCount" content="1569">
+
+
+
+<meta itemprop="keywords" content="CDH,Hadoop," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CDH5开启Kerberos认证"/>
+<meta name="twitter:description" content="1. 安装KDC服务 参考KDC安装 2. 拷贝JCE_POLICY文件 将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*j"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">CDH5开启Kerberos认证</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-25 </span>
+        <div class="post-category">
+            <a href="/categories/hadoop/"> Hadoop </a>
+            </div>
+          <span class="more-meta"> 约 1569 字 </span>
+          <span class="more-meta"> 预计阅读 4 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-安装kdc服务">1. 安装KDC服务</a></li>
+<li><a href="#2-拷贝jce-policy文件">2. 拷贝JCE_POLICY文件</a></li>
+<li><a href="#3-安装kerberos客户端">3. 安装Kerberos客户端</a></li>
+<li><a href="#4-kdc中创建cloudera-scm管理账户">4. KDC中创建cloudera-scm管理账户</a></li>
+<li><a href="#5-通过向导为集群启用kerberos">5. 通过向导为集群启用Kerberos</a>
+<ul>
+<li><a href="#5-1-为集群启用kerberos">5.1 为集群启用Kerberos</a></li>
+<li><a href="#5-2-勾选下列选项">5.2 勾选下列选项</a></li>
+<li><a href="#5-3-设置kerberos">5.3 设置Kerberos</a></li>
+<li><a href="#5-4-krb5配置">5.4 KRB5配置</a></li>
+<li><a href="#5-5-添加管理员凭证">5.5 添加管理员凭证</a></li>
+<li><a href="#5-6-等待运行完成">5.6 等待运行完成</a></li>
+<li><a href="#5-7-指定集群中各服务采用的凭证名称">5.7 指定集群中各服务采用的凭证名称</a></li>
+<li><a href="#5-8-设置datanode相关端口-准备重启">5.8 设置DataNode相关端口，准备重启</a></li>
+<li><a href="#5-9-等待集群重启完成">5.9 等待集群重启完成</a></li>
+</ul></li>
+<li><a href="#6-创建supergroup用户-非hdfs">6. 创建supergroup用户（非hdfs）</a></li>
+<li><a href="#6-1-配置superuser">6.1 配置superuser</a></li>
+<li><a href="#7-为各webui启用kerberos认证">7. 为各WebUI启用Kerberos认证</a>
+<ul>
+<li><a href="#7-1-hdfs的webui启用kerberos">7.1 HDFS的WEBUI启用Kerberos</a></li>
+<li><a href="#7-2-yarn的webui启用kerberos">7.2 YARN的WEBUI启用Kerberos</a></li>
+<li><a href="#7-3-为hue的ui界面启用kerberos">7.3 为Hue的UI界面启用Kerberos</a></li>
+</ul></li>
+<li><a href="#8-为各应用单独创建用户">8. 为各应用单独创建用户</a>
+<ul>
+<li><a href="#8-1-kdc中为应用创建用户">8.1 KDC中为应用创建用户</a></li>
+<li><a href="#8-2-各服务节点上创建用户">8.2 各服务节点上创建用户</a></li>
+<li><a href="#8-3-hdfs中为用户添加用户目录">8.3 HDFS中为用户添加用户目录</a></li>
+<li><a href="#8-4-为各程序应用用户生成keytab文件">8.4 为各程序应用用户生成keytab文件</a></li>
+</ul></li>
+<li><a href="#9-验证-kerberos-是否生效">9. 验证*Kerberos*是否生效</a></li>
+<li><a href="#10-连接hive">10. 连接Hive</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-安装kdc服务">1. 安装KDC服务</h2>
+
+<p>参考<a href="https://app.yinxiang.com/shard/s7/nl/4429779/eea8564c-0a45-41db-8492-3665ef2a517c">KDC安装</a></p>
+
+<h2 id="2-拷贝jce-policy文件">2. 拷贝JCE_POLICY文件</h2>
+
+<p>将*jce_policy-8.zip*文件解压并拷贝到各节点的*jdk*下的*jre/lib/security*目录下。</p>
+
+<p><img src="./images/1511494154101.png" alt="Alt text" /></p>
+
+<p>例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">for</span> i in <span class="o">{</span><span class="m">6</span>..9<span class="o">}</span><span class="p">;</span> <span class="k">do</span> scp -rp local_policy.jar US_export_policy.jar root@cdh<span class="nv">$i</span>:/usr/java/jdk1.8.0_102/jre/lib/security<span class="p">;</span> <span class="k">done</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="3-安装kerberos客户端">3. 安装Kerberos客户端</h2>
+
+<p>在所有节点上安装*Kerberos*客户端</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">yum install krb5-workstation krb5-libs krb5-auth-dialog –y</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-kdc中创建cloudera-scm管理账户">4. KDC中创建cloudera-scm管理账户</h2>
+
+<p><img src="./images/1511494232787.png" alt="Alt text" /></p>
+
+<p>例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">addprinc -pw Hbcloud67122390! cloudera-scm/admin@HBGAY.COM</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="5-通过向导为集群启用kerberos">5. 通过向导为集群启用Kerberos</h2>
+
+<h3 id="5-1-为集群启用kerberos">5.1 为集群启用Kerberos</h3>
+
+<p><img src="./images/1511494268783.png" alt="Alt text" /></p>
+
+<h3 id="5-2-勾选下列选项">5.2 勾选下列选项</h3>
+
+<p>勾选前，请确保已经完成下列选项。如果按照前面步骤进行的，此处可全部勾选。</p>
+
+<p><img src="./images/1511494295423.png" alt="Alt text" /></p>
+
+<h3 id="5-3-设置kerberos">5.3 设置Kerberos</h3>
+
+<p><img src="./images/1511494336375.png" alt="Alt text" /></p>
+
+<p>注意加密类型为<code>aes256-cts-hmac-sha1-96</code></p>
+
+<h3 id="5-4-krb5配置">5.4 KRB5配置</h3>
+
+<p><img src="./images/1511494371170.png" alt="Alt text" /></p>
+
+<h3 id="5-5-添加管理员凭证">5.5 添加管理员凭证</h3>
+
+<p>将前面为cloudera在*KDC*中建立的<code>cloudera-scm</code>账户及密码填上。</p>
+
+<p><img src="./images/1511494420569.png" alt="Alt text" /></p>
+
+<h3 id="5-6-等待运行完成">5.6 等待运行完成</h3>
+
+<p><img src="./images/1511494436007.png" alt="Alt text" /></p>
+
+<h3 id="5-7-指定集群中各服务采用的凭证名称">5.7 指定集群中各服务采用的凭证名称</h3>
+
+<p>这里保持默认即可。</p>
+
+<p><img src="./images/1511494462138.png" alt="Alt text" /></p>
+
+<h3 id="5-8-设置datanode相关端口-准备重启">5.8 设置DataNode相关端口，准备重启</h3>
+
+<p><img src="./images/1511494494049.png" alt="Alt text" /></p>
+
+<h3 id="5-9-等待集群重启完成">5.9 等待集群重启完成</h3>
+
+<p><img src="./images/1511494507856.png" alt="Alt text" /></p>
+
+<h2 id="6-创建supergroup用户-非hdfs">6. 创建supergroup用户（非hdfs）</h2>
+
+<p>如果是使用*CDH*安装的集群，默认情况下为使用*hdfs*作为超级用户。启用*kerberos*后，建议单独设置一个超级用户。</p>
+
+<h2 id="6-1-配置superuser">6.1 配置superuser</h2>
+
+<p>选择HDFS服务
+<img src="./images/1511494674864.png" alt="Alt text" /></p>
+
+<p>进入配置选项
+<img src="./images/1511494680258.png" alt="Alt text" /></p>
+
+<p>将*supergroup*修改为指定值，如*xygay*。</p>
+
+<p><img src="./images/1511494714566.png" alt="Alt text" /></p>
+
+<p>重启HDFS。
+<img src="./images/1511494727215.png" alt="Alt text" /></p>
+
+<p>在KDC数据库中添加*superuser*凭证。
+<img src="./images/1511494761436.png" alt="Alt text" /></p>
+
+<h2 id="7-为各webui启用kerberos认证">7. 为各WebUI启用Kerberos认证</h2>
+
+<h3 id="7-1-hdfs的webui启用kerberos">7.1 HDFS的WEBUI启用Kerberos</h3>
+
+<p><img src="./images/1511495119114.png" alt="Alt text" /></p>
+
+<p>然后根据提示重启服务</p>
+
+<h3 id="7-2-yarn的webui启用kerberos">7.2 YARN的WEBUI启用Kerberos</h3>
+
+<p><img src="./images/1511495125355.png" alt="Alt text" /></p>
+
+<p>然后根据提示重启服务</p>
+
+<h3 id="7-3-为hue的ui界面启用kerberos">7.3 为Hue的UI界面启用Kerberos</h3>
+
+<p><img src="./images/1511495141249.png" alt="Alt text" /></p>
+
+<p>然后根据提示重启服务</p>
+
+<p><strong>注意：</strong>
+重启后，还需要将*hue*的*keytab*文件拷贝到<code>/var/lib/hue/hue.keytab</code>。
+* 进入目录*/opt/cm-5.13.0/run/cloudera-scm-agent/process/*下，找到修改时间最近的*HUE_SERVER<em>目录，如</em>/opt/cm-5.13.0/run/cloudera-scm-agent/process/80-hue-HUE_SERVER*。
+* 进入该目录将*keytab*文件拷贝到<code>/var/lib/hue/hue.keytab</code></p>
+
+<p>这步操作完成后需要重启Hue服务。</p>
+
+<h2 id="8-为各应用单独创建用户">8. 为各应用单独创建用户</h2>
+
+<p>例如，此处单独为云搜索、ETL创建用户。
+* 云搜索：cloudsearch
+* ETL：etl</p>
+
+<h3 id="8-1-kdc中为应用创建用户">8.1 KDC中为应用创建用户</h3>
+
+<p><img src="./images/1511494848630.png" alt="Alt text" /></p>
+
+<h3 id="8-2-各服务节点上创建用户">8.2 各服务节点上创建用户</h3>
+
+<p>除了在*KDC*中添加这两个用户外，还需要在各节点上创建这几个用户。同时*UID*必须大于*1000*。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">useradd –u <span class="m">1001</span> cloudsearch
+useradd –u <span class="m">1002</span> etl</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-3-hdfs中为用户添加用户目录">8.3 HDFS中为用户添加用户目录</h3>
+
+<p>先使用刚才创建的*superuser*进行登陆。</p>
+
+<p><img src="./images/1511494969231.png" alt="Alt text" /></p>
+
+<p>执行下面的命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">hdfs dfs -mkdir /user/cloudsearch
+hdfs dfs -mkdir /user/etl
+
+hdfs dfs -chown cloudsearch /user/cloudsearch
+hdfs dfs -chown etl /user/etl</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="8-4-为各程序应用用户生成keytab文件">8.4 为各程序应用用户生成keytab文件</h3>
+
+<p><strong>注意：</strong>
+&gt; 如果不是应用用户，则不需要生成keytab文件。因为生成了keytab文件，其密码方式就会失效。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">kadmin.local</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">addprinc -randkey cloudsearch@HBGAY.COM
+xst -k cloudsearch.keytab cloudsearch@HBGAY.COM</code></pre></td></tr></table>
+</div>
+</div>
+<p>然后，在当前目录就可以查看到生成的<code>keytab</code>文件。
+<img src="./images/1517277729418.png" alt="Alt text" /></p>
+
+<p><strong>提示</strong>
+&gt; xst时使用-norandkey参数可不改变用户原密码来生成keytab文件，具体参考<a href="https://app.yinxiang.com/shard/s7/nl/4429779/eea8564c-0a45-41db-8492-3665ef2a517c">01-KDC安装</a>中<strong>创建用户</strong>章节，也可以不改变用户密码生成*keytab*文件。</p>
+
+<h2 id="9-验证-kerberos-是否生效">9. 验证*Kerberos*是否生效</h2>
+
+<ol>
+<li>清除当前用户凭证</li>
+</ol>
+
+<p><img src="./images/1511495026327.png" alt="Alt text" /></p>
+
+<ol>
+<li><p>执行hadoop命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">hdfs dfs -ls /</code></pre></td></tr></table>
+</div>
+</div>
+<p>执行后报错信息如下：
+<img src="./images/1511495055926.png" alt="Alt text" /></p></li>
+
+<li><p>使用用户登录后再执行
+<img src="./images/1511495085904.png" alt="Alt text" /></p></li>
+</ol>
+
+<h2 id="10-连接hive">10. 连接Hive</h2>
+
+<p>使用*beeline*连接*Hive*时，步骤如下：
+* 先使用自己的用户登陆Kerberos客户端，如<code>kinit hive@CDH.COM</code>
+* 再输入<code>beeline</code>命令
+* 输入<code>!connect jdbc:hive2://dmdb4:10000/default;principal=hive/dmdb4@CDH.COM</code></p>
+
+<p><strong>提示：</strong>
+<code>principal=hive/dmdb4@CDH.COM</code>中<code>dmdb4</code>替换为*Hive*服务节点的*HostName*。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-25
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/cdh/">CDH</a>
+          <a href="/tags/hadoop/">Hadoop</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2019-08-25/cdh5%E5%AE%89%E8%A3%85.html">
+            <span class="next-text nav-default">CDH5安装</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html" class="leancloud_visitors" data-flag-title="CDH5开启Kerberos认证">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
