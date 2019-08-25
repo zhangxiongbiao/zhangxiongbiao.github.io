@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>CDH5安装 - Even - A super concise theme for Hugo</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="01-Cloudera Manager及CDH安装 0. 简述 相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点： * CDH 相对稳定 * CDH 解决了 Hadoop 生态圈各组件" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://zhangxiongbiao.github.io/post/2019-08-25/cdh5%E5%AE%89%E8%A3%85.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="CDH5安装" />
+<meta property="og:description" content="01-Cloudera Manager及CDH安装 0. 简述 相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点： * CDH 相对稳定 * CDH 解决了 Hadoop 生态圈各组件" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zhangxiongbiao.github.io/post/2019-08-25/cdh5%E5%AE%89%E8%A3%85.html" />
+<meta property="article:published_time" content="2019-08-25T01:37:56+08:00" />
+<meta property="article:modified_time" content="2019-08-25T01:37:56+08:00" />
+<meta itemprop="name" content="CDH5安装">
+<meta itemprop="description" content="01-Cloudera Manager及CDH安装 0. 简述 相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点： * CDH 相对稳定 * CDH 解决了 Hadoop 生态圈各组件">
+
+
+<meta itemprop="datePublished" content="2019-08-25T01:37:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-25T01:37:56&#43;08:00" />
+<meta itemprop="wordCount" content="6070">
+
+
+
+<meta itemprop="keywords" content="CDH," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="CDH5安装"/>
+<meta name="twitter:description" content="01-Cloudera Manager及CDH安装 0. 简述 相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点： * CDH 相对稳定 * CDH 解决了 Hadoop 生态圈各组件"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">CDH5安装</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-25 </span>
+        <div class="post-category">
+            <a href="/categories/hadoop/"> Hadoop </a>
+            </div>
+          <span class="more-meta"> 约 6070 字 </span>
+          <span class="more-meta"> 预计阅读 13 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#01-cloudera-manager及cdh安装">01-Cloudera Manager及CDH安装</a>
+<ul>
+<li><a href="#0-简述">0. 简述</a>
+<ul>
+<li><a href="#0-1-搭建环境说明">0.1 搭建环境说明</a></li>
+<li><a href="#0-2-安装包">0.2 安装包</a></li>
+<li><a href="#0-3-安装说明">0.3 安装说明</a></li>
+</ul></li>
+<li><a href="#1-基础环境配置">1. 基础环境配置</a>
+<ul>
+<li><a href="#1-1-hostname配置">1.1 hostname配置</a></li>
+<li><a href="#1-2-hosts文件配置">1.2 hosts文件配置</a></li>
+<li><a href="#1-3-ssh免密码登陆配置">1.3 ssh免密码登陆配置</a></li>
+<li><a href="#1-4-防火墙配置">1.4 防火墙配置</a></li>
+<li><a href="#1-5-selinux配置">1.5 selinux配置</a></li>
+<li><a href="#16-yum源配置">16. yum源配置</a></li>
+</ul></li>
+<li><a href="#2-jdk安装">2. JDK安装</a>
+<ul>
+<li><a href="#2-1-卸载已有openjdk">2.1 卸载已有OpenJdk</a></li>
+<li><a href="#2-2-安装">2.2 安装</a></li>
+<li><a href="#2-3-设置环境变量">2.3 设置环境变量</a></li>
+</ul></li>
+<li><a href="#3-ntp时间服务器配置">3. NTP时间服务器配置</a>
+<ul>
+<li><a href="#3-0-设置时区">3.0 设置时区</a></li>
+<li><a href="#3-1-安装ntp服务">3.1 安装ntp服务</a></li>
+<li><a href="#3-2-配置时间服务器节点">3.2 配置时间服务器节点</a></li>
+<li><a href="#3-3-配置同步节点">3.3 配置同步节点</a></li>
+</ul></li>
+<li><a href="#4-mysql安装配置">4. MySql安装配置</a>
+<ul>
+<li><a href="#4-1-mysql服务安装">4.1 MySQL服务安装</a></li>
+<li><a href="#4-2-mysql配置">4.2 MySQL配置</a></li>
+<li><a href="#4-2-1-root远程登陆配置">4.2.1 root远程登陆配置</a></li>
+</ul></li>
+<li><a href="#5-cloudera基础环境准备">5. Cloudera基础环境准备</a>
+<ul>
+<li><a href="#5-1-jdk安装">5.1 JDK安装</a></li>
+<li><a href="#5-2-安装依赖包">5.2 安装依赖包</a></li>
+<li><a href="#5-3-上传安装包">5.3 上传安装包</a></li>
+<li><a href="#5-3-创建用户">5.3 创建用户</a></li>
+<li><a href="#5-4-初始化数据库">5.4 初始化数据库</a></li>
+<li><a href="#5-5-配置环境变量">5.5 配置环境变量</a></li>
+<li><a href="#5-7-修改启动脚本">5.7 修改启动脚本</a></li>
+</ul></li>
+<li><a href="#6-cloudera-agent安装">6. Cloudera Agent安装</a>
+<ul>
+<li><a href="#6-1-配置server端地址">6.1 配置Server端地址</a></li>
+<li><a href="#6-2-启动">6.2 启动</a></li>
+<li><a href="#6-3-配置开机自启">6.3 配置开机自启</a></li>
+</ul></li>
+<li><a href="#7-cloudera-manager">7. Cloudera Manager</a>
+<ul>
+<li><a href="#7-1-启动">7.1 启动</a>
+<ul>
+<li><a href="#7-1-1-配置开机自启">7.1.1 配置开机自启</a></li>
+</ul></li>
+<li><a href="#7-2-登陆">7.2 登陆</a></li>
+</ul></li>
+<li><a href="#8-cdh5安装">8. CDH5安装</a>
+<ul>
+<li><a href="#8-1-使用parcel配置本地软件库">8.1 使用Parcel配置本地软件库</a></li>
+<li><a href="#8-2-选择版本">8.2 选择版本</a></li>
+<li><a href="#8-3-选择要管理的hosts">8.3 选择要管理的Hosts</a></li>
+<li><a href="#8-4-选择软件包">8.4 选择软件包</a></li>
+<li><a href="#8-5-选择要安装的服务">8.5 选择要安装的服务</a></li>
+<li><a href="#8-6-为各hosts分配服务角色">8.6 为各Hosts分配服务角色</a></li>
+<li><a href="#8-7-为各服务配置数据库设置">8.7 为各服务配置数据库设置</a></li>
+<li><a href="#8-8-安装">8.8 安装</a></li>
+<li><a href="#8-9-添加mysql驱动包到hive安装目录">8.9 添加MySQL驱动包到Hive安装目录</a></li>
+<li><a href="#8-10-添加mysql驱动包到ooize目录">8.10 添加MySQL驱动包到Ooize目录</a></li>
+<li><a href="#8-11-进入控制台">8.11 进入控制台</a></li>
+</ul></li>
+<li><a href="#9-测试安装">9. 测试安装</a>
+<ul>
+<li><a href="#9-1-检查所有host的heartbeats">9.1 检查所有Host的Heartbeats</a></li>
+<li><a href="#9-2-运行一个-mapreduce-job">9.2 运行一个<em>MapReduce Job</em></a></li>
+<li><a href="#9-3-启动hue检查">9.3 启动Hue检查</a></li>
+</ul></li>
+<li><a href="#10-启用-禁用hdfs-ha">10. 启用/禁用HDFS HA</a>
+<ul>
+<li><a href="#10-1-启用hdfs-ha">10.1 启用HDFS HA</a></li>
+<li><a href="#10-2-禁用hdfs-ha">10.2 禁用HDFS HA</a></li>
+</ul></li>
+<li><a href="#11-配置其它组件支持hdfs-ha">11. 配置其它组件支持HDFS HA</a></li>
+<li><a href="#11-附录-cloudera相关安装包下载地址">11.  附录：cloudera相关安装包下载地址</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h1 id="01-cloudera-manager及cdh安装">01-Cloudera Manager及CDH安装</h1>
+
+<h2 id="0-简述">0. 简述</h2>
+
+<p>相对于原生的 *Hadoop平台*，选择安装*CDH*的原因有如下几点：
+* <em>CDH</em> 相对稳定
+* <em>CDH</em> 解决了 <em>Hadoop</em> 生态圈各组件的版本对应关系
+* <em>Cloudera Manager</em> 可以很方便地监控、管理、扩展节点及组件
+* 当版本升级时，采用 <em>CDH</em> 更方便</p>
+
+<h3 id="0-1-搭建环境说明">0.1 搭建环境说明</h3>
+
+<p>下面将从零开始离线搭建 <em>CDH Cluster</em> （适用于内网环境），采用的操作系统为 <em>CentOS6.5</em> ，虚拟机数量为3台，*CentOS*为最小化安装。</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">节点名称</th>
+<th align="right">系统名称</th>
+<th align="center">配置</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">192.168.52.15（cdh5）</td>
+<td align="right">CentOS6.5</td>
+<td align="center">1核/4G/20G</td>
+</tr>
+
+<tr>
+<td align="left">192.168.52.16（cdh6）</td>
+<td align="right">CentOS6.5</td>
+<td align="center">1核/1G/20G</td>
+</tr>
+
+<tr>
+<td align="left">192.168.52.17（cdh7）</td>
+<td align="right">CentOS6.5</td>
+<td align="center">1核/1G/20G</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>提醒：</strong>请根据真实环境选择硬件配置，上表仅为本机虚拟机配置。</p>
+
+<h3 id="0-2-安装包">0.2 安装包</h3>
+
+<p>由于为离线安装，请提前准备如下安装包。</p>
+
+<p><strong>JDK安装包（Linux）：</strong></p>
+
+<p>| 名称      |     说明|<br />
+| :&mdash;&mdash;&ndash; | &mdash;&mdash;&ndash;:|
+| jdk-8u102-linux-x64.tar.gz|   jdk1.8|</p>
+
+<p><strong>MySQL相关安装包：</strong></p>
+
+<table>
+<thead>
+<tr>
+<th align="left">名称　</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">mysql-5.7.16-1.el6.x86_64.rpm-bundle.tar</td>
+<td align="right">MySQL的RPM包（适用于CentOS或RedHat 6）</td>
+</tr>
+
+<tr>
+<td align="left">mysql-connector-java-5.1.44.jar</td>
+<td align="right">MySQL的*jdbc*驱动包</td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>cloudera CDH相关安装包：</strong></p>
+
+<table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="right">说明</th>
+<th align="center"></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel</td>
+<td align="right">用于做本地软件库，包含*CDH*、*Hive*等组件，各节点最终从该库下载相应组件到本地。</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha1</td>
+<td align="right">本地软件库*sha*的值，该文件存在且值正确时才不会去远程重新下载本地软件库。</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">manifest.json</td>
+<td align="right">parcel软件库中的包依赖关系</td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">cloudera-manager-el6-cm5.13.0_x86_64.tar.gz</td>
+<td align="right">Cloudera Manager及Agent安装包</td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="0-3-安装说明">0.3 安装说明</h3>
+
+<p>*CDH*的安装采用*root*用户安装，由于*CM*支持的*single user mode*有一些功能是不支持的，所以暂时先以*root*安装并运行程序。</p>
+
+<h2 id="1-基础环境配置">1. 基础环境配置</h2>
+
+<h3 id="1-1-hostname配置">1.1 hostname配置</h3>
+
+<p><strong>临时修改：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">hostname cdh5</pre></td></tr></table>
+</div>
+</div>
+<p><strong>永久修改：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">vim /etc/sysconfig/network</pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p><img src="./images/1508671187959.png" alt="Alt text" /></p>
+</blockquote>
+
+<p>提示：
+&gt; 临时修改即时生效，重启失效。
+&gt; 永久修改即时不生效，重启才生效。</p>
+
+<p>按下表中列出的逐个为各节点配置*hostname*。</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">IP</th>
+<th align="left">hostname</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">192.168.52.15</td>
+<td align="left">cdh5</td>
+<td align="right">主节点</td>
+</tr>
+
+<tr>
+<td align="left">192.168.52.16</td>
+<td align="left">cdh6</td>
+<td align="right">Worker节点</td>
+</tr>
+
+<tr>
+<td align="left">192.168.52.17</td>
+<td align="left">cdh7</td>
+<td align="right">Worker节点</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="1-2-hosts文件配置">1.2 hosts文件配置</h3>
+
+<p>通过*hosts*配置，方便各节点之间直接采用*hostname*访问，省去*ip*访问。*hosts*配置需要在<strong>所有节点</strong>上配置。</p>
+
+<p><strong>执行命令编辑：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">vim /etc/hosts</pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508671537427.png" alt="Alt text" /></p>
+
+<h3 id="1-3-ssh免密码登陆配置">1.3 ssh免密码登陆配置</h3>
+
+<p>默认情况下，使用*ssh*访问节点时需要密码的。但是*hadoop*或*cdh*都需要采用*ssh*免密码登陆以便管理各节点。</p>
+
+<p><strong>各节点生成公钥</strong>
+在各节点上生成公钥，然后把所有节点的公钥汇集到一起形成*authorized_keys*文件。</p>
+
+<p><em>生成公钥：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ssh-keygen -t rsa -P &#39;&#39;</pre></td></tr></table>
+</div>
+</div>
+<p>*-P*参数表示密码，此处采用空串，即无需密码。回车后会在当前用户*home*目录生成公、私钥对。
+<img src="./images/1508673030131.png" alt="Alt text" /></p>
+
+<p><img src="./images/1508673010093.png" alt="Alt text" /></p>
+
+<p><strong>拷贝各节点公钥</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">scp ~/.ssh/id_rsa.pub  root@192.168.52.15:/root/.ssh/id_rsa6.pub
+
+scp ~/.ssh/id_rsa.pub  root@192.168.52.15:/root/.ssh/id_rsa7.pub</code></pre></td></tr></table>
+</div>
+</div>
+<p>在节点*192.168.52.15*上将所有公钥合并到*authorized_keys*上。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">cat id_rsa.pub &gt;&gt; authorized_keys</pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508673351184.png" alt="Alt text" /></p>
+
+<p><strong>拷贝authorized_keys到所有节点</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">scp -p authorized_keys root@192.168.52.16:/root/.ssh/authorized_keys
+
+scp -p authorized_keys root@192.168.52.17:/root/.ssh/authorized_keys</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>所有节点上修改文件及目录权限</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">chmod <span class="m">600</span> ~/.ssh/authorized_keys
+chmod <span class="m">700</span> ~/.ssh</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>测试ssh登陆</strong>
+在各节点上*ssh*登陆所有节点（包括自己）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">ssh <span class="m">192</span>.168.52.15
+ssh <span class="m">192</span>.168.52.16
+ssh <span class="m">192</span>.168.52.17</code></pre></td></tr></table>
+</div>
+</div>
+<p>如果均可免密码登陆就说明配置成功。</p>
+
+<p>*提示：*如果登陆过程中弹出如下提示，需要将*host*添加到*know_hosts*文件时，输入*yes*即可。
+<img src="./images/1508673711852.png" alt="Alt text" /></p>
+
+<h3 id="1-4-防火墙配置">1.4 防火墙配置</h3>
+
+<p>防火墙修改的配置脚本如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="nv">BASEDIR</span><span class="o">=</span><span class="k">$(</span><span class="nb">cd</span> <span class="sb">`</span>dirname <span class="nv">$0</span><span class="sb">`</span><span class="p">;</span><span class="nb">pwd</span><span class="k">)</span>  <span class="c1"># 脚本当前所在目录</span>
+<span class="nv">EXTIF</span><span class="o">=</span><span class="s2">&#34;eth0&#34;</span> <span class="c1"># 这个是可以连上 Public IP 的网络接口</span> 
+<span class="nv">INIF</span><span class="o">=</span><span class="s2">&#34;&#34;</span> <span class="c1"># 内部 LAN 的连接接口；若无则写成 INIF=&#34;&#34; I</span>
+<span class="nv">NNET</span><span class="o">=</span><span class="s2">&#34;192.168.52.0/24&#34;</span> <span class="c1"># 若无内部网域接口，请填写成 INNET=&#34;&#34;</span> 
+<span class="nb">export</span> EXTIF INIF INNET
+
+<span class="c1"># 第一部份，针对本机的防火墙设定！##########################################</span>
+<span class="c1"># 1. 先设定好核心的网络功能：</span>
+<span class="nb">echo</span> <span class="s2">&#34;1&#34;</span> &gt; /proc/sys/net/ipv4/tcp_syncookies
+<span class="c1"># echo &#34;1&#34; &gt; /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts</span>
+<span class="k">for</span> i in /proc/sys/net/ipv4/conf/*/<span class="o">{</span>rp_filter,log_martians<span class="o">}</span><span class="p">;</span> 
+<span class="k">do</span> 
+	<span class="nb">echo</span> <span class="s2">&#34;1&#34;</span> &gt; <span class="nv">$i</span> 
+<span class="k">done</span>
+
+<span class="k">for</span> i in /proc/sys/net/ipv4/conf/*/<span class="o">{</span>accept_source_route,accept_redirects,send_redirects<span class="o">}</span><span class="p">;</span>
+<span class="k">do</span>
+	<span class="nb">echo</span> <span class="s2">&#34;0&#34;</span> &gt; <span class="nv">$i</span>
+<span class="k">done</span>
+
+
+<span class="c1"># 2. 清除规则、设定默认政策及开放 lo 与相关的设定值</span>
+<span class="nv">PATH</span><span class="o">=</span>/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/sbin:/usr/local/bin<span class="p">;</span> <span class="nb">export</span> PATH
+iptables -F
+iptables -X
+iptables -Z
+iptables -P INPUT DROP 
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD ACCEPT 
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+
+<span class="c1"># 3. 启动额外的防火墙 script 模块</span>
+<span class="k">if</span> <span class="o">[</span> -f <span class="nv">$BASEDIR</span>/iptables.deny <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+	sh <span class="nv">$BASEDIR</span>/iptables.deny
+<span class="k">fi</span>	
+
+<span class="k">if</span> <span class="o">[</span> -f <span class="nv">$BASEDIR</span>/iptables.allow <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+	sh <span class="nv">$BASEDIR</span>/iptables.allow
+<span class="k">fi</span>
+
+<span class="c1"># 4. 允许某些类型的 ICMP 封包进入</span>
+<span class="c1"># AICMP=&#34;0 3 3/4 4 11 12 14 16 18&#34;  # ping 走的是8这个类型</span>
+<span class="c1"># for tyicmp in $AICMP</span>
+<span class="c1"># do</span>
+<span class="c1"># 	iptables -A INPUT -i $EXTIF -p icmp --icmp-type $tyicmp -j ACCEPT</span>
+<span class="c1"># done</span>
+
+iptables -A INPUT -i <span class="nv">$EXTIF</span> -p icmp -j ACCEPT  <span class="c1"># 允许所有ICMP协议的包</span>
+
+<span class="c1"># 5. 允许某些服务的进入，请依照你自己的环境开启</span>
+<span class="c1"># iptables -A INPUT -p TCP -i $EXTIF --dport 22 --sport 1024:65534 -j ACCEPT # SSH</span>
+<span class="c1"># iptables -A INPUT -p TCP -i $EXTIF --dport 80 --sport 1024:65534 -j ACCEPT # www</span>
+
+iptables -A INPUT -s <span class="m">192</span>.168.52.0/24 -j ACCEPT <span class="c1"># 允许192.168.52.1-192.168.52.255段IP访问</span>
+
+/etc/init.d/iptables save</pre></td></tr></table>
+</div>
+</div>
+<p>注意：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">iptables -A INPUT -s <span class="m">192</span>.168.52.0/24 -j ACCEPT <span class="c1"># 允许192.168.52.1-192.168.52.255段IP访问</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这个网段配置请根据实际情况进行修改。</p>
+
+<p>将*iptables.rule*拷贝到所有脚本上执行。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sh iptables.rule</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="1-5-selinux配置">1.5 selinux配置</h3>
+
+<p>在所有节点上永久禁用*SELinux*。</p>
+
+<p><strong>临时禁用：</strong>setenforce 0</p>
+
+<p><strong>永久禁用（重启后生效）：</strong>修改*/etc/selinux/config*文件，将*SELINUX=enforcing*修改为*SELINUX=disabled*。</p>
+
+<p><img src="./images/1508674479733.png" alt="Alt text" /></p>
+
+<h3 id="16-yum源配置">16. yum源配置</h3>
+
+<p>进入<code>/etc/yum.repos.d/</code>目录修改<code>yum</code>源地址为生产环境下的<code>yum</code>源地址</p>
+
+<h2 id="2-jdk安装">2. JDK安装</h2>
+
+<h3 id="2-1-卸载已有openjdk">2.1 卸载已有OpenJdk</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">rpm -qa<span class="p">|</span>grep jdk</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508678650589.png" alt="Alt text" />
+卸载掉上面列举的两个<em>jdk</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">rpm -e --nodeps java-1.6.0-openjdk-1.6.0.35-1.13.7.1.el6_6.x86_64</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508678740040.png" alt="Alt text" /></p>
+
+<h3 id="2-2-安装">2.2 安装</h3>
+
+<ol>
+<li>将<code>jdk-8u102-linux-x64.tar.gz</code>上传到各节点上</li>
+
+<li><p>将该包解压缩到*/usr/java*目录下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">mkdir /usr/java
+tar -zxvf jdk-8u102-linux-x64.tar.gz -C /usr/java/</code></pre></td></tr></table>
+</div>
+</div></li>
+</ol>
+
+<h3 id="2-3-设置环境变量">2.3 设置环境变量</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vim /etc/profile.d/java.sh
+<span class="nb">export</span> <span class="nv">JAVA_HOME</span><span class="o">=</span>/usr/java/jdk1.8.0_102/
+<span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$JAVA_HOME</span>/bin:<span class="nv">$PATH</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508678372651.png" alt="Alt text" /></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">source</span> /etc/profile.d/java.sh</code></pre></td></tr></table>
+</div>
+</div>
+<p><code>java -version</code>查看是否生效
+<img src="./images/1508678459116.png" alt="Alt text" /></p>
+
+<h2 id="3-ntp时间服务器配置">3. NTP时间服务器配置</h2>
+
+<p>在集群中，时间同步非常重要，为避免各种各样的问题，这里为所有节点安装*ntp*服务。其中*192.168.52.15*节点作为时间服务器节点，其它节点则从该节点同步时间。</p>
+
+<h3 id="3-0-设置时区">3.0 设置时区</h3>
+
+<p>为所有节点设置时区为上海</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-安装ntp服务">3.1 安装ntp服务</h3>
+
+<p>为所有节点安装*ntp*服务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">yum install ntp -y</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508678920194.png" alt="Alt text" /></p>
+
+<h3 id="3-2-配置时间服务器节点">3.2 配置时间服务器节点</h3>
+
+<p>在时间服务器节点（192.168.52.15）上编辑<em>/etc/ntp.conf</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vim /etc/ntp.conf</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508679308088.png" alt="Alt text" /></p>
+
+<p>然后启动*ntpd*服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">service ntpd start</code></pre></td></tr></table>
+</div>
+</div>
+<p>查看端口，检查*ntpd*服务是否开启
+<img src="./images/1508679406969.png" alt="Alt text" /></p>
+
+<p>当与上游节点同步后，可看到如下信息
+<img src="./images/1508679440155.png" alt="Alt text" /></p>
+
+<p>或者看下是否有跟上游节点联机
+<img src="./images/1508679474377.png" alt="Alt text" /></p>
+
+<h3 id="3-3-配置同步节点">3.3 配置同步节点</h3>
+
+<p>任意一个同步节点上，安装*nc*，测试下时间服务器节点的*123*端口能否访问。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">nc -uvz cdh5 <span class="m">123</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508679822747.png" alt="Alt text" /></p>
+
+<p>在其它同步节点上编辑<em>/etc/ntp.conf</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vim /etc/ntp.conf</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508679665785.png" alt="Alt text" /></p>
+
+<p>然后启动*ntpd*服务</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">service ntpd start</code></pre></td></tr></table>
+</div>
+</div>
+<p>*提示：*同步需要间隔一段时间的，请先静候几分钟再看是否同步成功。</p>
+
+<p>将*ntp.conf*拷贝到所有节点，shell示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="k">for</span> i in <span class="o">{</span><span class="m">1</span>..5<span class="o">}</span><span class="p">;</span> <span class="k">do</span> scp -rp /etc/ntp.conf root@slave0<span class="nv">$i</span>:/etc<span class="p">;</span> <span class="k">done</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-mysql安装配置">4. MySql安装配置</h2>
+
+<h3 id="4-1-mysql服务安装">4.1 MySQL服务安装</h3>
+
+<p><strong>上传MySQL安装包：</strong>
+将*MySQL*安装包<code>mysql-5.7.16-1.el6.x86_64.rpm-bundle.tar</code>拷贝到节点*cdh7*上，在该节点部署*MySQL*服务。</p>
+
+<p><img src="./images/1508723058877.png" alt="Alt text" /></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">mkdir rpm
+tar -xvf /opt/mysql-5.7.16-1.el6.x86_64.rpm-bundle.tar -C /opt/rpm/</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508723226439.png" alt="Alt text" /></p>
+
+<p><strong>安装MySQL：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">yum install mysql-community-<span class="o">{</span>server,client,common,libs<span class="o">}</span>-* </code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508723713161.png" alt="Alt text" /></p>
+
+<h3 id="4-2-mysql配置">4.2 MySQL配置</h3>
+
+<p><strong>修改存储路径：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vim /etc/my.cnf</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508723976579.png" alt="Alt text" /></p>
+
+<p><strong>尝试启动服务：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">service mysqld start</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508724022654.png" alt="Alt text" /></p>
+
+<p><strong>获取初始随机的root密码：</strong>
+<code>grep 'temporary password' /var/log/mysqld.log</code>
+<img src="./images/1508724243914.png" alt="Alt text" /></p>
+
+<p>注意：这个日志路径为*mysql.cnf*中配置的路径</p>
+
+<p><strong>尝试连接MySQL：</strong>
+<code>mysql -h localhost -uroot -p</code>
+<img src="./images/1508724277250.png" alt="Alt text" /></p>
+
+<p><strong>解决mysql.sock的问题：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ERROR 2002 (HY000): Can&#39;t connect to local MySQL server through socket &#39;/var/lib/mysql/mysql.sock&#39; (2)</pre></td></tr></table>
+</div>
+</div>
+<p>这个问题是由于在*/etc/my.cnf*中把*socket*的路径给改了。</p>
+
+<p>使用软连接
+<code>ln -s /data/mysql/mysql.sock /var/lib/mysql/mysql.sock</code></p>
+
+<p><img src="./images/1508724648290.png" alt="Alt text" /></p>
+
+<h3 id="4-2-1-root远程登陆配置">4.2.1 root远程登陆配置</h3>
+
+<p>*MySQL*中不再单一地以用户名作为凭证，而是以<strong>用户名+来访问IP</strong>作为凭证，即<strong>用户名+来访问IP</strong>类似于一个唯一的用户。</p>
+
+<p><strong>初始化root@localhost访问密码：</strong>
+<code>ALTER USER 'root'@'localhost' IDENTIFIED BY '123456';</code></p>
+
+<p><img src="./images/1508725082870.png" alt="Alt text" /></p>
+
+<p>因为密码太简单，被拒绝了。重新设置一个复杂的密码吧。
+<code>ALTER USER 'root'@'localhost' IDENTIFIED BY 'Hbcloud67122390!';</code>
+<img src="./images/1508725455189.png" alt="Alt text" /></p>
+
+<p><strong>设置root远程访问：</strong>
+先把密码校验策略关闭
+<code>uninstall plugin validate_password;</code></p>
+
+<p>设置*root@%*远程*root*访问
+<code>GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;</code></p>
+
+<p>刷新权限
+<code>FLUSH PRIVILEGES;</code></p>
+
+<p><strong>检验root远程访问：</strong>
+在其它节点上安装*MySQL Client*：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">yum install mysql-community-<span class="o">{</span>client,common,libs<span class="o">}</span>-*  -y</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508725853163.png" alt="Alt text" /></p>
+
+<p>该节点上连接*cdh7*节点上的*mysql*数据库：
+<img src="./images/1508725893415.png" alt="Alt text" /></p>
+
+<h2 id="5-cloudera基础环境准备">5. Cloudera基础环境准备</h2>
+
+<h3 id="5-1-jdk安装">5.1 JDK安装</h3>
+
+<p><a href="#2-jdk安装">参考</a></p>
+
+<h3 id="5-2-安装依赖包">5.2 安装依赖包</h3>
+
+<p>在所有节点上安装以下依赖包：</p>
+
+<p><img src="./images/1508726110988.png" alt="Alt text" />
+<img src="./images/1508726123201.png" alt="Alt text" /></p>
+
+<p>整理后的安装命令如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">yum install bind-utils chkconfig cyrus-sasl-gssapi cyrus-sasl-plain fuse fuse-libs gcc httpd init-functions libxslt mod_ssl MySQL-python openssl openssl-devel openssl-devel perl portmap postgresql-server psmisc python python-devel python-psycopg2 python-setuptools sed service sqlite swig useradd zlib -y</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="5-3-上传安装包">5.3 上传安装包</h3>
+
+<p>前面也提到过，<code>cloudera-manager-el6-cm5.13.0_x86_64.tar.gz</code>是*Cloudera Manager*及*Cloudera Agent*的安装包。</p>
+
+<p>将该包上传到主节点（cdh5）的*/opt*目录，请保持这个默认目录。
+<img src="./images/1508726453099.png" alt="Alt text" /></p>
+
+<p>然后解压缩</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">tar -zxvf cloudera-manager-el6-cm5.13.0_x86_64.tar.gz</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508726541781.png" alt="Alt text" /></p>
+
+<h3 id="5-3-创建用户">5.3 创建用户</h3>
+
+<p>在所有节点上创建*cloudera-scm*用户及组。</p>
+
+<p><code>useradd --system --home=/opt/cm-5.13.0/run/cloudera-scm-server --no-create-home --shell=/bin/false --comment &quot;Cloudera SCM User&quot; cloudera-scm</code></p>
+
+<p><strong>注意</strong>：*/opt/cm-5.13.0*上目录是安装目录</p>
+
+<h3 id="5-4-初始化数据库">5.4 初始化数据库</h3>
+
+<p>将驱动包<code>mysql-connector-java-5.1.44.jar</code>拷贝到目录<code>/opt/cm-5.13.0/share/cmf/lib</code>下。
+<img src="./images/1508726835986.png" alt="Alt text" /></p>
+
+<p><strong>Cloudera Manager的管理库初始化：</strong>
+<code>/opt/cm-5.13.0/share/cmf/schema/scm_prepare_database.sh mysql -h cdh7 -uroot -p123456 --scm-host cdh5 scm scm scm</code></p>
+
+<p><strong>提示：</strong>
+* <code>-h cdh7</code>指定*MySQL*服务器地址
+* <code>-uroot</code>指定*MySQL*连接账户
+* <code>-p123456</code>指定*MySQL*连接账户密码
+* <code>--scm-host cdh5</code>指定*Cloudera Manager*的服务器地址
+* <code>scm scm scm</code>可以不用管，照抄官网的</p>
+
+<p><img src="./images/1508727318418.png" alt="Alt text" /></p>
+
+<p><strong>创建其它组件的数据库：</strong>
+使用*root*账户登陆到*MySQL*数据库，依次创建如下数据库
+* Hive数据库
+<code>create database hive DEFAULT CHARSET utf8 COLLATE utf8_general_ci;</code></p>
+
+<ul>
+<li><p>集群监控数据库
+<code>create database amon DEFAULT CHARSET utf8 COLLATE utf8_general_ci;</code></p></li>
+
+<li><p>HUE数据库
+<code>create database hue DEFAULT CHARSET utf8 COLLATE utf8_general_ci;</code></p></li>
+
+<li><p>Oozie数据库
+<code>create database oozie DEFAULT CHARSET utf8 COLLATE utf8_general_ci;</code></p></li>
+</ul>
+
+<p><img src="./images/1508727361834.png" alt="Alt text" /></p>
+
+<h3 id="5-5-配置环境变量">5.5 配置环境变量</h3>
+
+<p>在所有节点上配置环境变量<code>CMF_DEFAULTS</code>，指向*CM*目录。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">vim /etc/profile.d/java.sh
+<span class="nb">export</span> <span class="nv">CMF_DEFAULTS</span><span class="o">=</span>/opt/cm-5.13.0/</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508727754763.png" alt="Alt text" /></p>
+
+<p>然后使之立即生效
+<code>source /etc/profile.d/java.sh</code>
+<strong>提示：</strong>如果其它会话窗口不生效，请关闭会话窗口重新打开即可。</p>
+
+<p>检查是否生效：
+<img src="./images/1508727860899.png" alt="Alt text" /></p>
+
+<h3 id="5-7-修改启动脚本">5.7 修改启动脚本</h3>
+
+<p><strong>修改server启动脚本：</strong>
+找到<code>/opt/cm-5.13.0/etc/init.d/cloudera-scm-server</code>文件，第<code>71</code>行，替换为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">CMF_DEFAULTS</span><span class="o">=</span><span class="k">$(</span>readlink -e <span class="k">$(</span>dirname <span class="k">$(</span>readlink -e <span class="si">${</span><span class="nv">BASH_SOURCE</span><span class="p">-</span><span class="nv">$0</span><span class="si">}</span><span class="k">))</span>/../default<span class="k">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>修改agent启动脚本：</strong>
+找到<code>/opt/cm-5.13.0/etc/init.d/cloudera-scm-agent</code>文件，第<code>73</code>行，替换为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">CMF_DEFAULTS</span><span class="o">=</span><span class="k">$(</span>readlink -e <span class="k">$(</span>dirname <span class="k">$(</span>readlink -e <span class="si">${</span><span class="nv">BASH_SOURCE</span><span class="p">-</span><span class="nv">$0</span><span class="si">}</span><span class="k">))</span>/../default<span class="k">)</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="6-cloudera-agent安装">6. Cloudera Agent安装</h2>
+
+<h3 id="6-1-配置server端地址">6.1 配置Server端地址</h3>
+
+<p>在主节点*cdh5*上，修改<code>/opt/cm-5.13.0/etc/cloudera-scm-agent/config.ini</code>配置文件，指定*CM Server*地址为*cdh5*。</p>
+
+<p><img src="./images/1508727436570.png" alt="Alt text" /></p>
+
+<p>然后在主节点*cdh5*上将整个*cm-5.13.0*文件夹拷贝到其它所有*Agent*节点上。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">scp -rp cm-5.13.0/ root@cdh6:/opt/
+scp -rp cm-5.13.0/ root@cdh7:/opt/</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="6-2-启动">6.2 启动</h3>
+
+<p><code>$CMF_DEFAULTS/etc/init.d/cloudera-scm-agent start</code></p>
+
+<p><img src="./images/1508728024589.png" alt="Alt text" /></p>
+
+<p>查看启动日志：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">tail -f /opt/cm-5.13.0/log/cloudera-scm-agent/cloudera-scm-agent.log</pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1508728068197.png" alt="Alt text" /></p>
+
+<p>此时可能会报错，因为*Cloudera Manager Server*还未启动。先不管错误。</p>
+
+<h3 id="6-3-配置开机自启">6.3 配置开机自启</h3>
+
+<p>执行如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">ln -s /opt/cm-5.13.0/etc/init.d/cloudera-scm-agent /etc/init.d/cloudera-scm-agent
+chkconfig cloudera-scm-agent on</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="7-cloudera-manager">7. Cloudera Manager</h2>
+
+<h3 id="7-1-启动">7.1 启动</h3>
+
+<p>在主节点*cdh5*上启动*Cloudera Server*服务
+<code>$CMF_DEFAULTS/etc/init.d/cloudera-scm-server start</code></p>
+
+<p>查看启动日志
+<code>tail -f $CMF_DEFAULTS/log/cloudera-scm-server/cloudera-scm-server.log</code></p>
+
+<h4 id="7-1-1-配置开机自启">7.1.1 配置开机自启</h4>
+
+<p>执行如下命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">ln -s /opt/cm-5.13.0/etc/init.d/cloudera-scm-server /etc/init.d/cloudera-scm-server
+chkconfig cloudera-scm-server on</code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="7-2-登陆">7.2 登陆</h3>
+
+<p>因为在虚拟机上，本机运行*Cloudera Manager*耗时几分钟，所以请耐心等待。</p>
+
+<p>待服务启动完毕后，访问地址：<code>http://cdh5:7180</code>进入管理页面。</p>
+
+<p><img src="./images/1508728743490.png" alt="Alt text" /></p>
+
+<p>初始管理账户密码：<code>admin/admin</code>，请勿先登陆，待配置*Parcel*后再玩。</p>
+
+<h2 id="8-cdh5安装">8. CDH5安装</h2>
+
+<h3 id="8-1-使用parcel配置本地软件库">8.1 使用Parcel配置本地软件库</h3>
+
+<p>上传如下３个文件到主节点*cdh5*的<code>/opt/cloudera/parcel-repo</code>目录
+* CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel
+* CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha1
+* manifest.json</p>
+
+<p>然后重命名<code>CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha1</code>为<code>CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel.sha</code>。（即去掉最后的那个*1*）</p>
+
+<p><img src="./images/1508728968064.png" alt="Alt text" /></p>
+
+<p>最后重启*CM server*服务：
+<code>$CMF_DEFAULTS/etc/init.d/cloudera-scm-server restart</code></p>
+
+<h3 id="8-2-选择版本">8.2 选择版本</h3>
+
+<p>使用*admin/admin*登陆<em>Cloudera Manager</em>
+<img src="./images/1508730122605.png" alt="Alt text" /></p>
+
+<p>同意许可条款
+<img src="./images/1508730161283.png" alt="Alt text" /></p>
+
+<p>选择免费版（CDH5后再没有50个节点的限制了）
+<img src="./images/1508730198917.png" alt="Alt text" /></p>
+
+<p><img src="./images/1508730218284.png" alt="Alt text" /></p>
+
+<h3 id="8-3-选择要管理的hosts">8.3 选择要管理的Hosts</h3>
+
+<p>勾选需要添加到集群中的节点（启动了*Agent*后就会出现在这里）：
+<img src="./images/1508730252502.png" alt="Alt text" /></p>
+
+<h3 id="8-4-选择软件包">8.4 选择软件包</h3>
+
+<p>这里默认选择的是刚才安装的本地软件库。
+<img src="./images/1508730352384.png" alt="Alt text" /></p>
+
+<p>然后等待*CM*将软件包分发到所有节点上（实际上是拷贝到<code>/opt/cloudera/parcels</code>目录下）。
+<img src="./images/1508730421752.png" alt="Alt text" /></p>
+
+<p>软件包分发完成后，点击继续会开始主机检查。
+<img src="./images/1508731626632.png" alt="Alt text" /></p>
+
+<h3 id="8-5-选择要安装的服务">8.5 选择要安装的服务</h3>
+
+<p><img src="./images/1508735249651.png" alt="Alt text" /></p>
+
+<p>请根据实际情况选择要安装的服务。</p>
+
+<h3 id="8-6-为各hosts分配服务角色">8.6 为各Hosts分配服务角色</h3>
+
+<p>然后为每个节点分配角色，实际上就是哪个节点安装哪些服务。请根据实际情况选择。</p>
+
+<p><img src="./images/1508735327383.png" alt="Alt text" /></p>
+
+<h3 id="8-7-为各服务配置数据库设置">8.7 为各服务配置数据库设置</h3>
+
+<p><img src="./images/1508735529820.png" alt="Alt text" /></p>
+
+<p>根据刚才在*MySQL*中建的库，依次填写正确。</p>
+
+<p><img src="./images/1508735484549.png" alt="Alt text" /></p>
+
+<p>然后，点击测试连接。
+<img src="./images/1508735577606.png" alt="Alt text" /></p>
+
+<p><strong>提示：</strong>在<code>/opt/cm-5.13.0/run/cloudera-scm-agent/process</code>目录会显示正在运行的如*数据库连接测试*等任务，此处可以看到任务运行的日志信息。
+<img src="./images/1508735758613.png" alt="Alt text" /></p>
+
+<p><strong>说明：</strong>由于本机虚拟机环境下，多次连数据库响应超时，所以多次连接失败，重新点测试连接就可以了，多试几次。</p>
+
+<h3 id="8-8-安装">8.8 安装</h3>
+
+<p>修改一些核心配置：
+<img src="./images/1508736072960.png" alt="Alt text" /></p>
+
+<p>然后就进入了安装界面：
+<img src="./images/1508736126732.png" alt="Alt text" /></p>
+
+<p>安装过程中可能会出现异常并安装失败，待错误排查完成后，点击<strong>Resume</strong>按钮继续安装。</p>
+
+<p><img src="./images/1508741220286.png" alt="Alt text" /></p>
+
+<h3 id="8-9-添加mysql驱动包到hive安装目录">8.9 添加MySQL驱动包到Hive安装目录</h3>
+
+<p><img src="./images/1508741289764.png" alt="Alt text" /></p>
+
+<p>找到*Hive*安装在哪个节点上，此处为*cdh5*（注意先前分配服务角色时的机器）。将*MySQL*驱动包上传到目录<code>/opt/cloudera/parcels/CDH-5.13.0-1.cdh5.13.0.p0.29/lib/hive/lib</code>下。</p>
+
+<p><img src="./images/1508741519832.png" alt="Alt text" /></p>
+
+<p>然后点击*Resume*继续安装。
+<img src="./images/1508741545383.png" alt="Alt text" /></p>
+
+<h3 id="8-10-添加mysql驱动包到ooize目录">8.10 添加MySQL驱动包到Ooize目录</h3>
+
+<p><img src="./images/1508742103447.png" alt="Alt text" /></p>
+
+<p>找到*Ooize*安装在哪个节点上，拷贝*MySQL<em>驱动包到</em>/var/lib/ooize*目录下。</p>
+
+<p><img src="./images/1508742145723.png" alt="Alt text" /></p>
+
+<p>然后点击*Resume*继续安装。</p>
+
+<h3 id="8-11-进入控制台">8.11 进入控制台</h3>
+
+<h2 id="9-测试安装">9. 测试安装</h2>
+
+<h3 id="9-1-检查所有host的heartbeats">9.1 检查所有Host的Heartbeats</h3>
+
+<h3 id="9-2-运行一个-mapreduce-job">9.2 运行一个<em>MapReduce Job</em></h3>
+
+<h3 id="9-3-启动hue检查">9.3 启动Hue检查</h3>
+
+<h2 id="10-启用-禁用hdfs-ha">10. 启用/禁用HDFS HA</h2>
+
+<h3 id="10-1-启用hdfs-ha">10.1 启用HDFS HA</h3>
+
+<p>选择<strong>群集</strong>下的<strong>HDFS</strong>服务，点击右侧的<strong>操作</strong>下拉框：
+<img src="./images/1508854047752.png" alt="Alt text" /></p>
+
+<p>然后选择<strong>启用 High Avaliable</strong>：
+<img src="./images/1508854080042.png" alt="Alt text" /></p>
+
+<p>输入集群*Nameservice*名称，如<strong>hbgay</strong>：
+<img src="./images/1508854131110.png" alt="Alt text" /></p>
+
+<p>选择<strong>Standby NameNode</strong>及<strong>JournalNode</strong>所在主机：
+<img src="./images/1508854210002.png" alt="Alt text" /></p>
+
+<p>选择存储目录：
+<img src="./images/1508854318732.png" alt="Alt text" /></p>
+
+<p>等待命令执行完成：
+<img src="./images/1508854341797.png" alt="Alt text" /></p>
+
+<p>命令执行完成后：
+<img src="./images/TIM截图20171024215718.png" alt="Alt text" /></p>
+
+<p><strong>注意：</strong>这里的对当前*NameNode*格式化这个执行失败，可以不用管。因为当前*NameNode*本身有数据，所以格式化失败，这个不影响转换为*HA*。</p>
+
+<p><img src="./images/TIM截图20171024215733.png" alt="Alt text" /></p>
+
+<h3 id="10-2-禁用hdfs-ha">10.2 禁用HDFS HA</h3>
+
+<p>选择<strong>群集</strong>下的<strong>HDFS</strong>服务，点击<strong>操作</strong>按钮：
+<img src="./images/1508853687361.png" alt="Alt text" /></p>
+
+<p><strong>操作</strong>下拉框中选择<strong>禁用 High Avaliable</strong>：
+<img src="./images/1508853739999.png" alt="Alt text" /></p>
+
+<p>然后选择要保留的<strong>NameNode</strong>以及<strong>SecondaryNameNode</strong>：
+<img src="./images/1508853825091.png" alt="Alt text" /></p>
+
+<p>配置<strong>SecondaryNameNode</strong>的存储目录：
+<img src="./images/1508853854745.png" alt="Alt text" /></p>
+
+<p>接下来，等待这一系列命令执行完毕即可：
+<img src="./images/1508853891438.png" alt="Alt text" /></p>
+
+<h2 id="11-配置其它组件支持hdfs-ha">11. 配置其它组件支持HDFS HA</h2>
+
+<h2 id="11-附录-cloudera相关安装包下载地址">11.  附录：cloudera相关安装包下载地址</h2>
+
+<p><strong>cloudera-manager-el6-cm5.13.0_x86_64.tar.gz</strong>：
+<a href="http://archive.cloudera.com/cm5/cm/5/">http://archive.cloudera.com/cm5/cm/5/</a></p>
+
+<p><img src="./images/1508730757946.png" alt="Alt text" /></p>
+
+<p><em>提示：</em>
+* *el6*对应为*RedHat6*或<em>CentOS6</em>
+* *cm5.13.0*为版本号，请与*CDH*保持一致
+* *x86_64*请根据*CPU*选择</p>
+
+<p><strong>CDH-5.13.0-1.cdh5.13.0.p0.29-el6.parcel</strong>：
+<a href="http://archive.cloudera.com/cdh5/parcels/5.13.0/">http://archive.cloudera.com/cdh5/parcels/5.13.0/</a></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-25
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/cdh/">CDH</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/even-preview.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Theme preview</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/hidden-post.html">
+            <span class="next-text nav-default">This is a hidden post.</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="https://zhangxiongbiao.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
