@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>分布式事务介绍 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. 事务的基本概念 数据库事务（简称：事务）是数据库管理系统执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。 数据库事务拥有以下四个特性" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-08-25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="分布式事务介绍" />
+<meta property="og:description" content="1. 事务的基本概念 数据库事务（简称：事务）是数据库管理系统执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。 数据库事务拥有以下四个特性" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-08-25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1.html" />
+<meta property="article:published_time" content="2019-08-25T21:14:56+08:00" />
+<meta property="article:modified_time" content="2019-08-25T21:14:56+08:00" />
+<meta itemprop="name" content="分布式事务介绍">
+<meta itemprop="description" content="1. 事务的基本概念 数据库事务（简称：事务）是数据库管理系统执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。 数据库事务拥有以下四个特性">
+
+
+<meta itemprop="datePublished" content="2019-08-25T21:14:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-25T21:14:56&#43;08:00" />
+<meta itemprop="wordCount" content="5493">
+
+
+
+<meta itemprop="keywords" content="事务,分布式," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="分布式事务介绍"/>
+<meta name="twitter:description" content="1. 事务的基本概念 数据库事务（简称：事务）是数据库管理系统执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。 数据库事务拥有以下四个特性"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">分布式事务介绍</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-25 </span>
+        <div class="post-category">
+            <a href="/categories/%E4%BA%8B%E5%8A%A1/"> 事务 </a>
+            </div>
+          <span class="more-meta"> 约 5493 字 </span>
+          <span class="more-meta"> 预计阅读 11 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-事务的基本概念">1. 事务的基本概念</a>
+<ul>
+<li><a href="#1-1-本地事务">1.1 本地事务</a></li>
+</ul></li>
+<li><a href="#2-分布式事务介绍">2. 分布式事务介绍</a>
+<ul>
+<li><a href="#2-1-分布式事务大纲">2.1 分布式事务大纲</a></li>
+</ul></li>
+<li><a href="#3-刚性事务">3. 刚性事务</a>
+<ul>
+<li><a href="#3-1-全局事务-dtp-标准分布式事务">3.1 全局事务-DTP（标准分布式事务）</a></li>
+<li><a href="#3-2-两阶段提交">3.2 两阶段提交</a></li>
+<li><a href="#3-3-三阶段提交">3.3 三阶段提交</a></li>
+</ul></li>
+<li><a href="#4-柔性事务">4. 柔性事务</a>
+<ul>
+<li><a href="#4-1-理论">4.1 理论</a></li>
+<li><a href="#4-2-服务模式">4.2 服务模式</a></li>
+<li><a href="#4-3-解决方案">4.3 解决方案</a>
+<ul>
+<li><a href="#4-3-1-可靠消息最终一致-异步确保性">4.3.1 可靠消息最终一致（异步确保性）</a></li>
+<li><a href="#4-3-2-tcc-两阶段型-补偿型">4.3.2 TCC（两阶段型、补偿型）</a></li>
+<li><a href="#4-3-3-最大努力通知型-定期校对">4.3.3 最大努力通知型（定期校对）</a></li>
+<li><a href="#4-3-4-纯补偿型-略">4.3.4 纯补偿型（略）</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#5-事务框架">5. 事务框架</a>
+<ul>
+<li><a href="#5-1-tcc-transaction">5.1 TCC-Transaction</a></li>
+<li><a href="#5-2-tx-lcn">5.2 TX-LCN</a></li>
+<li><a href="#5-3-hmily">5.3 hmily</a></li>
+<li><a href="#5-4-easytransaction">5.4 EasyTransaction</a></li>
+<li><a href="#5-5-支付宝xts">5.5 支付宝XTS</a></li>
+<li><a href="#5-6-阿里gts">5.6 阿里GTS</a></li>
+<li><a href="#5-7-meepo">5.7 meepo</a></li>
+<li><a href="#5-8-seata">5.8 Seata</a></li>
+</ul></li>
+<li><a href="#6-参考资料">6. 参考资料</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-事务的基本概念">1. 事务的基本概念</h2>
+
+<p>数据库事务（简称：事务）是数据库管理系统执行过程中的一个逻辑单位，由一个有限的数据库操作序列构成。</p>
+
+<p>数据库事务拥有以下四个特性，习惯上被称之为ACID特性。
+* <strong>原子性（Atomicity）：</strong> 事务作为一个整体被执行，包含在其中的对数据库的操作要么全部被执行，要么都不执行[3]。
+* <strong>一致性（Consistency）：</strong> 事务应确保数据库的状态从一个一致状态转变为另一个一致状态。一致状态的含义是数据库中的数据应满足完整性约束。
+* <strong>隔离性（Isolation）：</strong> 多个事务并发执行时，一个事务的执行不应影响其他事务的执行。
+* <strong>持久性（Durability）：</strong> 已被提交的事务对数据库的修改应该永久保存在数据库中。</p>
+
+<p><img src="./images/1543307679974.png" alt="Alt text" /></p>
+
+<h3 id="1-1-本地事务">1.1 本地事务</h3>
+
+<p>在 <strong>Java</strong> 中，主要有 <strong>JDBC事务</strong> 、 <strong>JTA事务</strong> 。其中 <strong>JDBC事务</strong> 就是本地事务，它直接使用资源管理器（数据库）来控制事务。
+&gt; JTA事务在后面全局事务中会介绍
+<img src="./images/1543472773481.png" alt="Alt text" /></p>
+
+<p><strong>提示：</strong>
+&gt; 有的地方也提到<strong>Java</strong>中还有容器事务，按我的理解不过是对 <strong>JTA</strong> 、 <strong>JDBC</strong> 的封装，如Spring事务框架既可以管理 <em>JDBC</em> 也可以管理 <em>JTA</em> 事务。</p>
+
+<h2 id="2-分布式事务介绍">2. 分布式事务介绍</h2>
+
+<p><strong>什么是分布式事务？</strong>
+分布式事务用于在分布式系统中保证不同节点之间的数据一致性。事务的参与者分布于网络环境中的不同的节点。也就是说可以将多个事务资源纳入到一个单一的事务之中，并且这些事务资源可以分布到不同的机器上。这些承载分布式资源的机器可能是出于同一个网络中，也可能处于不同的网络中。甚至说，某个事务资源本质上就是一个通过 HTTP 访问的单纯的 Internet 资源。因此一个分布式事务的服务操作可能会访问不止一个事务资源（比如访问两个不同的数据库服务器），也可能调用另一个服务。</p>
+
+<p>分布式事务的实现有很多种，最具有代表性的是由Oracle Tuxedo系统提出的XA分布式事务协议。由于 <em>XA</em> 协议实现的局限性，后续又有很多柔性事务解决方案。</p>
+
+<p><strong>假如没有分布式事务是什么样的？</strong>
+在典型的交易系统中，通常会采用分布式架构。在一笔交易中，会涉及到调用多个服务来完成这笔交易。如下图所示：
+<img src="./images/1543474053257.png" alt="Alt text" />
+正常情况下，2个服务都执行成功，这样2个数据库能保持一致性。
+<img src="./images/1543474134382.png" alt="Alt text" />
+异常情况下，可能库存服务执行成功，但是订单服务执行失败。即库存扣减了，但是订单没生成。
+<img src="./images/1543474237758.png" alt="Alt text" /></p>
+
+<h3 id="2-1-分布式事务大纲">2.1 分布式事务大纲</h3>
+
+<p><img src="./images/分布式事务2.png" alt="Alt text" /></p>
+
+<p><a href="./files/分布式事务.xmind">分布式事务.xmind</a></p>
+
+<p>在分布式事务中，通常分为2类事务。
+* 刚性事务
+&gt; 刚性事务满足严格的ACID，但是效率会比较低。在分布式系统中并不常用。</p>
+
+<ul>
+<li>柔性事务
+&gt; 柔性事务基于BASE理论，满足A（原子性）D（持久性），但是会降低C（一致性）I（隔离性）来提高性能。</li>
+</ul>
+
+<p>采用刚性事务还是柔性事务需要根据具体的应用场景来决定。</p>
+
+<h2 id="3-刚性事务">3. 刚性事务</h2>
+
+<p>上面介绍的本地事务也属于刚性事务，但是它不属于分布式事务，这里不再说明。</p>
+
+<h3 id="3-1-全局事务-dtp-标准分布式事务">3.1 全局事务-DTP（标准分布式事务）</h3>
+
+<p>全局事务-DTP模型，主要通过事务管理器协调资源管理器并控制事务。如下图所示：
+<img src="./images/1543474685441.png" alt="Alt text" /></p>
+
+<p><strong>XA协议</strong> 主要定义了全局事务模型中TM和AM之间的协议接口。具体说明如下图所示：
+<img src="./images/1543474694765.png" alt="Alt text" /></p>
+
+<p>在JavaEE平台中，主要通过 <em>XA</em> 协议实现分布式事务。JavaEE中提供 <strong>JTA</strong> 接口，具体说明如下图所示。
+<img src="./images/1543474930532.png" alt="Alt text" /></p>
+
+<p>关于上图中提到的跨事务域，见下图：
+<img src="./images/1543475024957.png" alt="Alt text" /></p>
+
+<p>全局事务典型的具体实现是两阶段提交或三阶段提交协议。</p>
+
+<h3 id="3-2-两阶段提交">3.2 两阶段提交</h3>
+
+<p>二阶段提交(Two-phaseCommit)是指，在计算机网络以及数据库领域内，为了使基于分布式系统架构下的所有节点在进行事务提交时保持一致性而设计的一种算法(Algorithm)。通常，二阶段提交也被称为是一种协议(Protocol))。在分布式系统中，每个节点虽然可以知晓自己的操作时成功或者失败，却无法知道其他节点的操作的成功或失败。当一个事务跨越多个节点时，为了保持事务的ACID特性，需要引入一个作为协调者的组件来统一掌控所有节点(称作参与者)的操作结果并最终指示这些节点是否要把操作结果进行真正的提交(比如将更新后的数据写入磁盘等等)。因此，二阶段提交的算法思路可以概括为：参与者将操作成败通知协调者，再由协调者根据所有参与者的反馈情报决定各参与者是否要提交操作还是中止操作。</p>
+
+<p><img src="./images/1543482426850.png" alt="Alt text" /></p>
+
+<p>所谓的两个阶段是指：
+* 第一阶段：准备阶段(投票阶段)
+* 第二阶段：提交阶段（执行阶段）</p>
+
+<p><strong>准备阶段：</strong>
+事务协调者(事务管理器)给每个参与者(资源管理器)发送Prepare消息，每个参与者要么直接返回失败(如权限验证失败)，要么在本地执行事务，写本地的redo和undo日志，但不提交，到达一种“万事俱备，只欠东风”的状态。</p>
+
+<p><img src="./images/1543475391915.png" alt="Alt text" /></p>
+
+<p>准备阶段主要分为3个步骤：
+* 协调者向所有参与者发起Prepare请求
+* 参与者接收到Parepare请求后，各自执行与事务相关的数据更新。并写入Undo Log和Redo Log。
+&gt; 此处若参与者执行成功，即参与者已经执行了事务操作，会<code>锁定数据库资源</code>。</p>
+
+<ul>
+<li>参与者如果执行成功，暂时不提交事务，而是向事务协调者返回 <strong>完成</strong> 的消息，或返回 <strong>中止</strong> 的消息。</li>
+</ul>
+
+<p><strong>提交阶段：</strong>
+1. 正常流程
+如果在准备阶段全部收到完成消息，事务协调者给所有参与者发送 <strong>Commit</strong> 消息，所有参与者收到该消息后本地执行事务提交操作，并释放数据库锁资源。当本地事务提交完成后，向事务协调者返回 <strong>完成</strong> 消息。
+<img src="./images/1543477302237.png" alt="Alt text" /></p>
+
+<ol>
+<li>失败流程
+如果在准备阶段收到中断消息，事务协调者给所有参与者发送 <strong>Rollback</strong> 消息，所有参与者收到该消息后本地执行回滚操作，并释放数据库锁资源。当本地事务回滚完成后，向事务协调者返回 <strong>完成</strong> 消息，事务协调者随后取消事务。
+<img src="./images/1543478383906.png" alt="Alt text" />
+<img src="./images/1543478389393.png" alt="Alt text" /></li>
+</ol>
+
+<p>两阶段提交看起来确实能提供原子性操作，但是仍然存在几个问题：
+* <strong>性能问题：</strong> XA协议遵循强一致性。在事务执行过程中，各个节点占用着数据库资源，只有当所有节点准备完毕，事务协调者才会通知提交，参与者提交后释放资源。这样的过程有着非常明显的性能问题。
+* <strong>单点故障：</strong> 事务协调者存在单点故障。一旦事务协调者在第二阶段发生故障，那么所有的参与者还处于锁定资源过程中，并且无法继续完成事务操作。
+* <strong>网络故障导致数据不一致：</strong> 第二阶段时，如果部分参与者与协调者之间存在网络故障，这将导致协调者发送 <strong>Commit</strong> 消息后只有部分参与者收到了 <strong>Commit</strong> 消息并执行了提交操作，而存在网络故障的参与者没有执行提交操作并一直阻塞。这将导致分布式系统中数据不一致的情况。</p>
+
+<h3 id="3-3-三阶段提交">3.3 三阶段提交</h3>
+
+<p>三阶段提交是二阶段提交的改进版本，主要改进了2点：
+* <strong>引入超时机制：</strong> 在协调者和参与者中引入了超时机制。
+&gt; 例如上面说到网络故障情况下，未收到 <strong>Commit</strong> 消息的参与者将会经过超时时间后自动提交，释放锁资源。</p>
+
+<ul>
+<li><strong>在准备和提交阶段中再添加一个准备阶段：</strong> 保证了在最后提交阶段之前各参与节点的状态是一致的。
+&gt; 现在相当于有了2个准备阶段加1个提交阶段，即<code>CanCommit</code>、<code>PreCommit</code>、<code>DoCommit（提交阶段）</code></li>
+</ul>
+
+<p>三阶段提交示意图如下所示：
+<img src="./images/1543479409364.png" alt="Alt text" /></p>
+
+<p><strong>CanCommit阶段</strong>
+* 事务询问：
+&gt; 协调者向所有参与者发送 <strong>CanCommit</strong> 消息，询问是否可以执行事务提交操作，并等待事务参与者的响应。</p>
+
+<ul>
+<li>参与者响应：
+&gt; 参与者接收到 <strong>CanCommit</strong> 消息后，正常情况下如果认为自身可以执行提交事务，则返回 <strong>Yes</strong> ，否则返回 <strong>No</strong></li>
+</ul>
+
+<p><strong>PreCommit阶段</strong>
+当事务协调者发送 <strong>CanCommit消息</strong> 后，收到所有事务参与者返回 <strong>Yes</strong> 后进入 <strong>PreCommit阶段</strong> 。
+1. 协调者向所有参与者发送 <strong>PreCommit</strong> 消息
+2. 所有参与者收到消息后，执行事务操作，并记录UnDo和ReDo日志到事务日志中。
+3. 如果参与者成功执行了事务操作，则返回ACK响应，并等待下一步指令。</p>
+
+<p>当事务协调者发送 <strong>CanCommit消息</strong> 后，如果有事务参与者返回 <strong>No</strong> 或者等待响应超时，则执行事务的中断。
+1. 事务协调者向所有参与者发送中断请求
+2. 参与者收到来自协调者的中断请求后（或者超时未得到协调者的请求），执行事务的中断</p>
+
+<p><strong>DoCommit阶段</strong>
+DoCommit阶段中真正地提交事务，分为2种情况：
+<strong>正常并执行提交</strong>
+1. 协调者收到所有参与者返回的ACK响应，进入 <strong>DoCommit</strong> 阶段，向所有参与者发送doCommit消息。
+2. 参与者收到 <strong>DoCommit</strong> 请求后，执行正式的事务提交，并在执行事务之后释放事务资源。
+3. 事务提交完成后，向协调者发送ACK响应。
+4. 协调者收到所有参与者的ACK响应，结束事务。</p>
+
+<p><strong>中断事务</strong>
+当协调者没有收到 <strong>PreCommit</strong> 阶段由事务参与者返回的ACK响应或响应超时，此时协调者会执行事务中断操作。
+1. 向所有事务参与者发送中断请求
+2. 参与者收到事务中断请求后，执行回滚
+3. 参与者回滚完成后，向协调者发送ACK响应
+4. 协调者收到参与者返回的ACK消息后，中断事务</p>
+
+<p>三阶段主要是解决二阶段的单点故障问题，引入超时机制让参与者自动提交，但是这同样会造成数据不一致的情况。如因为网络原因，协调者发送中断消息，部分参与者没有收到中断并超时自动提交，这样就出现了数据不一致的情况。</p>
+
+<h2 id="4-柔性事务">4. 柔性事务</h2>
+
+<p>柔性事务主要用来解决分布式事务的方案是使用柔性事务。所谓柔性事务，相比较与数据库事务中的ACID这种刚性事务来说，柔性事务保证的事“基本可用，最终一致。”这其实就是基于BASE理论，保证数据的最终一致性。</p>
+
+<p>虽然柔性事务并不像刚性事务那样完全遵循ACID，但是，也是部分遵循ACID的，简单看一下关于ACID四个属性，柔性事务的支撑程度：
+* 原子性：严格遵循
+* 一致性：事务完成后的一致性严格遵循；事务中的一致性可适当放宽
+* 隔离性：并行事务间不可影响；事务中间结果可见性允许安全放宽
+* 持久性：严格遵循</p>
+
+<h3 id="4-1-理论">4.1 理论</h3>
+
+<p><strong>Base理论</strong>
+<img src="./images/1543480699329.png" alt="Alt text" /></p>
+
+<p><strong>CAP定理</strong>
+<img src="./images/1543480718712.png" alt="Alt text" /></p>
+
+<h3 id="4-2-服务模式">4.2 服务模式</h3>
+
+<p>柔性事务中的服务模式是做柔性事务的基础。做柔性事务时你的接口或功能必须满足其中的一个或几个服务模式，不一定要都满足，但是不满足的话肯定是做不成柔性事务的。</p>
+
+<p>服务模式并不等价为柔性事务解决方案，一个柔性事务解决方案可能会用到一到多个服务模式。
+<img src="./images/1543480966168.png" alt="Alt text" /></p>
+
+<p><strong>可查询操作</strong>
+例如，在下面的代码中，除了orderDao是本地操作外，其它操作全是Rpc调用操作。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="nf">void</span> <span class="n">completeOrder</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">orderDao</span><span class="p">.</span><span class="na">update</span><span class="p">();</span> <span class="c1">// 订单服务本地更新订单状态
+</span><span class="c1"></span>    <span class="n">accountService</span><span class="p">.</span><span class="na">update</span><span class="p">();</span> <span class="c1">// 调用资金账户服务给资金帐户加款
+</span><span class="c1"></span>    <span class="n">pointService</span><span class="p">.</span><span class="na">update</span><span class="p">();</span> <span class="c1">// 调用积分服务给积分帐户增加积分
+</span><span class="c1"></span>    <span class="n">accountingService</span><span class="p">.</span><span class="na">insert</span><span class="p">();</span> <span class="c1">// 调用会计服务向会计系统写入会计原始凭证
+</span><span class="c1"></span>    <span class="n">merchantNotifyService</span><span class="p">.</span><span class="na">notify</span><span class="p">();</span> <span class="c1">// 调用商户通知服务向商户发送支付结果通知
+</span><span class="c1"></span><span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>这种情况就明显需要引入分布式事务了，否则无法保证数据的一致性。在分布式事务中，就需要明确地知道这几个<strong>RPC</strong>服务的处理情况，即这几个事务参与者需要提供查询接口，这样才能判断出这几个RPC操作的处理情况。</p>
+
+<p><img src="./images/1543480981231.png" alt="Alt text" /></p>
+
+<p><strong>幂等操作</strong>
+幂等操作的特点是其任意多次执行所产生的影响均与一次执行的影响相同。也就是说，同一个方法，使用同样的参数，调用多次产生的业务结果与调用一次产生的业务结果相同。</p>
+
+<p><img src="./images/1543480990363.png" alt="Alt text" /></p>
+
+<p>要求功能方法实现幂等性，主要是为了数据的一致性，比如在事务补偿时需要不停地重试。如果方法没有实现幂等，就无法被重试了。</p>
+
+<p><strong>TCC操作</strong>
+TCC 即 Try-Confirm-Cancel，类似于2阶段提交，它位于业务层。</p>
+
+<p><img src="./images/1543481913352.png" alt="Alt text" /></p>
+
+<p><strong>可补偿操作</strong>
+在事务操作失败时，会执行 <strong>Rollback</strong> 操作。典型的如 <strong>TCC型解决方案</strong> 中会在业务层提供方法来手动回滚，这个方法就是补偿方法，同时需要满足幂等性。</p>
+
+<p><img src="./images/1543481628927.png" alt="Alt text" /></p>
+
+<h3 id="4-3-解决方案">4.3 解决方案</h3>
+
+<h4 id="4-3-1-可靠消息最终一致-异步确保性">4.3.1 可靠消息最终一致（异步确保性）</h4>
+
+<p>这种解决方案主要是基于消息中间件服务，异步确保最终一致性。</p>
+
+<p><img src="./images/1543482017178.png" alt="Alt text" /></p>
+
+<p><img src="./images/1543482075708.png" alt="Alt text" /></p>
+
+<h4 id="4-3-2-tcc-两阶段型-补偿型">4.3.2 TCC（两阶段型、补偿型）</h4>
+
+<p>TCC型解决方案类似于前面介绍的两阶段提交，不过它是在业务层，通过代码手动提交、回滚等。
+&gt; 开发量非常大，原本一个业务操作现在要写3个方法（try、confirm、cancel）</p>
+
+<p><img src="./images/1543482101609.png" alt="Alt text" /></p>
+
+<p><img src="./images/1543482307705.png" alt="Alt text" /></p>
+
+<h4 id="4-3-3-最大努力通知型-定期校对">4.3.3 最大努力通知型（定期校对）</h4>
+
+<p><img src="./images/1543482342882.png" alt="Alt text" />
+<img src="./images/1543482365983.png" alt="Alt text" /></p>
+
+<h4 id="4-3-4-纯补偿型-略">4.3.4 纯补偿型（略）</h4>
+
+<h2 id="5-事务框架">5. 事务框架</h2>
+
+<p>目前开源的分布式事务框架较大，主要是国内开发者贡献的。SpringCloud中文社区对常见的几种分布式事务框架进行了对比，链接如下：<a href="http://springcloud.cn/view/374">http://springcloud.cn/view/374</a></p>
+
+<h3 id="5-1-tcc-transaction">5.1 TCC-Transaction</h3>
+
+<p>GitHub地址：<a href="https://github.com/changmingxie/tcc-transaction">https://github.com/changmingxie/tcc-transaction</a>
+Star数：<code>2794+</code></p>
+
+<p><strong>TCC-Transaction</strong> 是典型的 <strong>TCC</strong> 型分布式事务解决方案，它不和底层 <strong>RPC</strong> 框架耦合，即doubbo,thrift,web service,http等都能支持。不过，该框架中提供了*dubbo*的额外支持。
+&gt; 该框架中会在 <em>TCC</em> 基础上，定时检测业务活动日志库并执行事务恢复保证最终一致。</p>
+
+<p>这个框架认真地体验过，也看过该框架的源代码。最终没有选择该框架，主要原因如下：
+<img src="./images/1543482975253.png" alt="Alt text" /></p>
+
+<h3 id="5-2-tx-lcn">5.2 TX-LCN</h3>
+
+<p>GitHub地址：<a href="https://github.com/codingapi/tx-lcn">https://github.com/codingapi/tx-lcn</a>
+Star数：<code>1444+</code></p>
+
+<p>正准备尝试&hellip;</p>
+
+<h3 id="5-3-hmily">5.3 hmily</h3>
+
+<p>GitHub地址：<a href="https://github.com/yu199195/hmily">https://github.com/yu199195/hmily</a>
+Star数：<code>1836+</code></p>
+
+<h3 id="5-4-easytransaction">5.4 EasyTransaction</h3>
+
+<p>GitHub地址：<a href="https://github.com/QNJR-GROUP/EasyTransaction">https://github.com/QNJR-GROUP/EasyTransaction</a>
+Star数：<code>1113+</code></p>
+
+<h3 id="5-5-支付宝xts">5.5 支付宝XTS</h3>
+
+<p>支付宝XTS本质上实际是TCC型解决方案。</p>
+
+<h3 id="5-6-阿里gts">5.6 阿里GTS</h3>
+
+<p>阿里GTS，商业收费，闭源。据说很牛，一个注解搞定分布式事务。</p>
+
+<p><a href="https://www.aliyun.com/aliware/txc?spm=5176.8142029.388261.386.a72376f4lqvQxv">https://www.aliyun.com/aliware/txc?spm=5176.8142029.388261.386.a72376f4lqvQxv</a></p>
+
+<h3 id="5-7-meepo">5.7 meepo</h3>
+
+<p>仿阿里GTS的开源版：<a href="https://github.com/wxbty/meepo">https://github.com/wxbty/meepo</a></p>
+
+<h3 id="5-8-seata">5.8 Seata</h3>
+
+<p>阿里开源分布式事务解决框架<a href="https://github.com/seata/seata">Seata</a></p>
+
+<h2 id="6-参考资料">6. 参考资料</h2>
+
+<p>站在巨人的肩膀上</p>
+
+<p><strong>1. XA二阶段、三阶段提交</strong></p>
+
+<p>博客：什么是分布式事务？</p>
+
+<p><a href="https://blog.csdn.net/bjweimengshu/article/details/79607522">https://blog.csdn.net/bjweimengshu/article/details/79607522</a></p>
+
+<p>Oracle XA协议
+<a href="./files/distributed-transactions-and-xa-163941.pdf">Oracle XA协议</a></p>
+
+<p><strong>2. 分布式事务原理介绍</strong></p>
+
+<p>本文主要参考下面这个文档
+<a href="./files/大规模SOA系统中的分布事务处事_程立.pdf">大规模SOA系统中的分布事务处事_程立.pdf</a></p>
+
+<p>下面这个文档是龙果网参考《大规模SOA系统中的分布事务处事_程立.pdf》编写的</p>
+
+<p><a href="./files/第03节--常用的分布式事务解决方案介绍.pdf">第03节&ndash;常用的分布式事务解决方案介绍</a></p>
+
+<p><a href="https://github.com/roncoo/roncoo-pay">龙果支付开源地址</a></p>
+
+<p><strong>3. 支付宝分布式事务文档</strong></p>
+
+<p><a href="./files/支付宝架构与技术@www.java1234.com.pdf">支付宝架构与技术@www.java1234.com.pdf</a></p>
+
+<p><a href="./files/XTS 支付宝分布式事务学习指南.pdf">XTS 支付宝分布式事务学习指南.pdf</a></p>
+
+<p><strong>4. 事务系列文章</strong></p>
+
+<ul>
+<li><a href="https://www.hollischuang.com/archives/898">数据库事务</a></li>
+<li><a href="https://www.hollischuang.com/archives/943">数据库事务隔离级别</a></li>
+<li><a href="https://www.hollischuang.com/archives/1658">Java中的事务－JDBC、JTA事务</a></li>
+<li><a href="https://www.hollischuang.com/archives/1678">Java中的本地事务和全局事务</a></li>
+<li><a href="https://www.hollischuang.com/archives/1489">Spring事务管理机制</a></li>
+<li><a href="https://www.hollischuang.com/archives/681">分布式事务-刚性事务-全局事务-2阶段3阶段提交</a></li>
+<li><a href="http://www.hollischuang.com/archives/1580">2阶段、3阶段补充</a></li>
+<li><a href="https://www.hollischuang.com/archives/2591">分布式事务-柔性事务</a></li>
+</ul>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-25
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E4%BA%8B%E5%8A%A1/">事务</a>
+          <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2019-08-25/cdh5%E5%BC%80%E5%90%AFkerberos.html">
+            <span class="next-text nav-default">CDH5开启Kerberos认证</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-08-25/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1.html" class="leancloud_visitors" data-flag-title="分布式事务介绍">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
