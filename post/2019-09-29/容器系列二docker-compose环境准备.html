@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>容器系列（二）：Docker-compose环境准备 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. 安装docker-compose docker-compose 依赖于 docker engine ，在安装 docker-compose 前应先安装好 docker 。 参考compose官方安装文档 2. 网络通讯 官方参考文档 在不指定 network 的情况" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="容器系列（二）：Docker-compose环境准备" />
+<meta property="og:description" content="1. 安装docker-compose docker-compose 依赖于 docker engine ，在安装 docker-compose 前应先安装好 docker 。 参考compose官方安装文档 2. 网络通讯 官方参考文档 在不指定 network 的情况" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" />
+<meta property="article:published_time" content="2019-09-29T11:37:56+08:00" />
+<meta property="article:modified_time" content="2019-09-29T11:37:56+08:00" />
+<meta itemprop="name" content="容器系列（二）：Docker-compose环境准备">
+<meta itemprop="description" content="1. 安装docker-compose docker-compose 依赖于 docker engine ，在安装 docker-compose 前应先安装好 docker 。 参考compose官方安装文档 2. 网络通讯 官方参考文档 在不指定 network 的情况">
+
+
+<meta itemprop="datePublished" content="2019-09-29T11:37:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-29T11:37:56&#43;08:00" />
+<meta itemprop="wordCount" content="1353">
+
+
+
+<meta itemprop="keywords" content="Docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器系列（二）：Docker-compose环境准备"/>
+<meta name="twitter:description" content="1. 安装docker-compose docker-compose 依赖于 docker engine ，在安装 docker-compose 前应先安装好 docker 。 参考compose官方安装文档 2. 网络通讯 官方参考文档 在不指定 network 的情况"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">容器系列（二）：Docker-compose环境准备</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-29 </span>
+        <div class="post-category">
+            <a href="/categories/docker/"> Docker </a>
+            </div>
+          <span class="more-meta"> 约 1353 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-安装docker-compose">1. 安装docker-compose</a></li>
+<li><a href="#2-网络通讯">2. 网络通讯</a></li>
+<li><a href="#3-服务依赖">3. 服务依赖</a></li>
+<li><a href="#4-资源限制">4. 资源限制</a></li>
+<li><a href="#5-环境变量">5. 环境变量</a>
+<ul>
+<li><a href="#5-1-在compose-file中使用环境变量">5.1 在Compose file中使用环境变量</a></li>
+<li><a href="#5-2-environment设置环境变量到容器中">5.2 environment设置环境变量到容器中</a></li>
+<li><a href="#5-3-通过compose将shell定义的环境变量传到container中">5.3 通过compose将shell定义的环境变量传到container中</a></li>
+<li><a href="#5-4-通过env-file传环境变量给容器">5.4 通过env_file传环境变量给容器</a></li>
+<li><a href="#5-5-env-文件">5.5 <code>.env</code>文件</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-安装docker-compose">1. 安装docker-compose</h2>
+
+<p><em>docker-compose</em> 依赖于 <em>docker engine</em> ，在安装 <em>docker-compose</em> 前应先安装好 <em>docker</em> 。</p>
+
+<p>参考<a href="https://docs.docker.com/compose/install/">compose官方安装文档</a></p>
+
+<p><img src="./images/1569460732890.png" alt="Alt text" /></p>
+
+<h2 id="2-网络通讯">2. 网络通讯</h2>
+
+<p><a href="https://docs.docker.com/compose/networking/">官方参考文档</a></p>
+
+<p>在不指定 <em>network</em> 的情况下， <em>docker-compose</em> 中的容器会加入默认 <em>network</em> ，容器之间可以互相通讯，并且可以使用 <em>service_name</em> 作为域名访问其它容器。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">  </span>dm7<span class="p">:</span><span class="w">
+</span><span class="w">    </span>build<span class="p">:</span><span class="w"> </span>./dm7<span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>dm7<span class="p">:</span>latest<span class="w">
+</span><span class="w">    </span>ports<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;5236:5236&#34;</span><span class="w">
+</span><span class="w">    </span>volumes<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span>/data/dm7<span class="p">:</span>/opt/dmdbms/data<span class="w">
+</span><span class="w">  </span>xxl-job<span class="p">:</span><span class="w">
+</span><span class="w">    </span>build<span class="p">:</span><span class="w"> </span>./xxl-job<span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>xxl-job<span class="p">:</span>latest<span class="w">
+</span><span class="w">    </span>ports<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;9100:8080&#34;</span><span class="w">
+</span><span class="w">    </span>command<span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">&#34;/bin/wait-for-it.sh&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;dm7:5236&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;-t&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;0&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;--&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;catalina.sh&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;run&#34;</span><span class="w"> </span><span class="p">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p>xxl-job依赖于dm7，它访问dm7时只需要使用 <em>service_name</em> <code>dm7</code>访问数据库。</p>
+</blockquote>
+
+<p>其实，<em>compose</em> 中也支持设置 <em>Host</em> ，不过在 <em>compose</em> 中可不太好获取容器 <em>IP</em> 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">   </span>mysql<span class="p">:</span><span class="w">
+</span><span class="w">    </span>extra_hosts<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;apollo-configservice:192.168.43.138&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="3-服务依赖">3. 服务依赖</h2>
+
+<p><em>docker-compose</em> 中定义了很多服务，但是服务之间是存在依赖关系的。<a href="https://docs.docker.com/compose/startup-order/">参考官方文档</a></p>
+
+<p><em>docker-compose</em> 中可以通过 <code>depends_on</code> 控制服务的启动或停止顺序，但是<code>A</code>容器启动时并不会一直等待它依赖的<code>B</code>容器服务完全启动好（可提供服务），它只是在<code>B</code>容器服务后面启动而已。</p>
+
+<p>为了解决这个问题，有几种方式：</p>
+
+<ul>
+<li><strong>上层服务添加重连机制</strong>：比如说依赖的数据库还未准备好，但是程序会定时重连直至成功。</li>
+<li><strong>上层服务中添加启动检查</strong>：在上层服务中添加逻辑检查其依赖服务是否启动好，比如说检测端口是否可用。</li>
+</ul>
+
+<p>上面提到的 <strong>上层服务中添加启动检查</strong> ，常见的方式是给容器启动命令添加一个包装脚本。比较常见的有端口检测或自定义脚本检测。</p>
+
+<ul>
+<li><p><strong>端口检测：</strong>可以直接使用 <a href="https://github.com/vishnubob/wait-for-it">wait-for-it</a> 、 <a href="https://github.com/Eficode/wait-for">wait-for</a> 、<a href="https://github.com/jwilder/dockerize">dockerize</a> 等脚本。例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s2">&#34;2&#34;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">
+</span><span class="w"></span>web<span class="p">:</span><span class="w">
+</span><span class="w"></span>build<span class="p">:</span><span class="w"> </span>.<span class="w">
+</span><span class="w"></span>ports<span class="p">:</span><span class="w">
+</span><span class="w">  </span>-<span class="w"> </span><span class="s2">&#34;80:8000&#34;</span><span class="w">
+</span><span class="w"></span>depends_on<span class="p">:</span><span class="w">
+</span><span class="w">  </span>-<span class="w"> </span><span class="s2">&#34;db&#34;</span><span class="w">
+</span><span class="w"></span>command<span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;./wait-for-it.sh&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;db:5432&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;--&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;python&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;app.py&#34;</span><span class="p">]</span><span class="w">
+</span><span class="w"></span>db<span class="p">:</span><span class="w">
+</span><span class="w"></span>image<span class="p">:</span><span class="w"> </span>postgres</code></pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p><strong>自定义脚本检测：</strong>大部分情况下可能端口检测已经够用了，但是有些服务在绑定监听端口后可能并不能立即提供服务，典型的如 <em>Apollo configservice</em> ，此时建议采用自定义脚本，自己编写逻辑探测服务是否启动。例如检测 <em>postgres</em> 是否可用：</p></li>
+</ul>
+
+<p><em>wait-for-postgres.sh：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/sh
+</span><span class="cp"></span><span class="c1"># wait-for-postgres.sh</span>
+
+<span class="nb">set</span> -e
+
+<span class="nv">host</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+<span class="nb">shift</span>
+<span class="nv">cmd</span><span class="o">=</span><span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+
+<span class="k">until</span> <span class="nv">PGPASSWORD</span><span class="o">=</span><span class="nv">$POSTGRES_PASSWORD</span> psql -h <span class="s2">&#34;</span><span class="nv">$host</span><span class="s2">&#34;</span> -U <span class="s2">&#34;postgres&#34;</span> -c <span class="s1">&#39;\q&#39;</span><span class="p">;</span> <span class="k">do</span>
+  &gt;<span class="p">&amp;</span><span class="m">2</span> <span class="nb">echo</span> <span class="s2">&#34;Postgres is unavailable - sleeping&#34;</span>
+  sleep <span class="m">1</span>
+<span class="k">done</span>
+
+&gt;<span class="p">&amp;</span><span class="m">2</span> <span class="nb">echo</span> <span class="s2">&#34;Postgres is up - executing command&#34;</span>
+<span class="nb">exec</span> <span class="nv">$cmd</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><em>Dockerfile</em> ：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">command: [&#34;./wait-for-postgres.sh&#34;, &#34;db&#34;, &#34;python&#34;, &#34;app.py&#34;]</pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-资源限制">4. 资源限制</h2>
+
+<p>在 <em>docker-compose</em> 的 <em>compose file version 3</em> 中设置资源限制有所改变。<a href="https://docs.docker.com/compose/compose-file/#resources">参考文档</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s2">&#34;3.7&#34;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">
+</span><span class="w">  </span>redis<span class="p">:</span><span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>redis<span class="p">:</span>alpine<span class="w">
+</span><span class="w">    </span>deploy<span class="p">:</span><span class="w">
+</span><span class="w">      </span>resources<span class="p">:</span><span class="w">
+</span><span class="w">        </span>limits<span class="p">:</span><span class="w">
+</span><span class="w">          </span>cpus<span class="p">:</span><span class="w"> </span><span class="s1">&#39;0.50&#39;</span><span class="w">
+</span><span class="w">          </span>memory<span class="p">:</span><span class="w"> </span>50M<span class="w">
+</span><span class="w">        </span>reservations<span class="p">:</span><span class="w">
+</span><span class="w">          </span>cpus<span class="p">:</span><span class="w"> </span><span class="s1">&#39;0.25&#39;</span><span class="w">
+</span><span class="w">          </span>memory<span class="p">:</span><span class="w"> </span>20M</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>提示：</strong> <em>compose file v3.7</em> 中的资源限制只支持在 <em>swam</em> 下使用，独立使用 <em>docker-compose</em> 时不会生效。</p>
+
+<p>在<a href="https://github.com/docker/compose/issues/4513">issue 4513</a>中提到， <em>docker-compose</em> 在v3中不支持独立使用资源限制，但是他仍然在维护 <em>v2</em> 版本。</p>
+
+<p>所以为了能独立使用 <em>Resource Limit</em> 功能，只需要将 <em>compose file version</em> 降低为较新的 <em>v2.4</em> 版本就行了。</p>
+
+<p><img src="./images/1569462690055.png" alt="Alt text" /></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">  </span>zookeeper<span class="p">:</span><span class="w">
+</span><span class="w">    </span>build<span class="p">:</span><span class="w"> </span>./zookeeper<span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>zookeeper<span class="p">:</span>latest<span class="w">
+</span><span class="w">    </span>ports<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;2181:2181&#34;</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;2888:2888&#34;</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;3888:3888&#34;</span><span class="w">        
+</span><span class="w">    </span>mem_limit<span class="p">:</span><span class="w"> </span>128m</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="5-环境变量">5. 环境变量</h2>
+
+<p><a href="https://docs.docker.com/compose/environment-variables/">官方文档-环境变量设置</a></p>
+
+<p>环境变量有很多方式进行设置，且优先级不同。优先级情况如下：</p>
+
+<ol>
+<li>Compose file中定义</li>
+<li>Shell 环境变量</li>
+<li>env_file</li>
+<li>Dockerfile中ENV声明</li>
+</ol>
+
+<blockquote>
+<p>1-4优先级从高到低</p>
+</blockquote>
+
+<h3 id="5-1-在compose-file中使用环境变量">5.1 在Compose file中使用环境变量</h3>
+
+<p>可以在 <em>shell</em> 中定义环境变量，然后在 <em>Compose file</em> 中引用该变量。</p>
+
+<p><em>Dockerfile：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">export</span> <span class="nv">HOST</span><span class="o">=</span><span class="s2">&#34;192.168.52.10&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><em>docker-compose.yml：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">  </span>env<span class="p">:</span><span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>env<span class="w">
+</span><span class="w">    </span>environment<span class="p">:</span><span class="w">
+</span><span class="w">      </span>JAVA_HOME<span class="p">:</span><span class="w"> </span>/tmp<span class="w">
+</span><span class="w">    </span>extra_hosts<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span><span class="s2">&#34;dm7:${HOST}&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>启动容器后，发现可正常读取到设置的 <em>host</em></p>
+
+<p><img src="./images/1569482540338.png" alt="Alt text" /></p>
+
+<h3 id="5-2-environment设置环境变量到容器中">5.2 environment设置环境变量到容器中</h3>
+
+<p><em>docker-compose.yml：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">version: &#39;2.4&#39;
+services:  
+  env:
+    image: env
+    environment:
+      JAVA_HOME: /tmp</pre></td></tr></table>
+</div>
+</div>
+<p><em>Dockerfile：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM alpine:latest
+
+ENV JAVA_HOME /usr/local/java
+COPY entrypoint.sh /bin/
+
+ENTRYPOINT [ &#34;/bin/entrypoint.sh&#34; ]</pre></td></tr></table>
+</div>
+</div>
+<p><em>compose</em> 中的 <em>environment</em> 定义的环境变量会覆盖掉 <em>Dockerfile</em> 中定义的环境变量。
+<img src="./images/1569480192078.png" alt="Alt text" /></p>
+
+<h3 id="5-3-通过compose将shell定义的环境变量传到container中">5.3 通过compose将shell定义的环境变量传到container中</h3>
+
+<p>可以在 <em>compose</em> 中将 <em>shell</em> 下定义的环境变量传到容器中。</p>
+
+<p><em>shell：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nb">export</span> <span class="nv">JAVA_HOME</span><span class="o">=</span>/opt/java</code></pre></td></tr></table>
+</div>
+</div>
+<p><em>compose file：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">version: <span class="s1">&#39;2.4&#39;</span>
+services:  
+  env:
+    image: env
+    environment:
+      - JAVA_HOME</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1569486766002.png" alt="Alt text" /></p>
+
+<h3 id="5-4-通过env-file传环境变量给容器">5.4 通过env_file传环境变量给容器</h3>
+
+<p><em>web-variables.env</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">JAVA_HOME=/zxb</pre></td></tr></table>
+</div>
+</div>
+<p><em>docker-compose.yml</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">  </span>env<span class="p">:</span><span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>env<span class="w">
+</span><span class="w">    </span>env_file<span class="p">:</span><span class="w">
+</span><span class="w">      </span>-<span class="w"> </span>web-variables.env</code></pre></td></tr></table>
+</div>
+</div>
+<p>运行容器后，正常输出环境变量</p>
+
+<p><img src="./images/1569487289050.png" alt="Alt text" /></p>
+
+<h3 id="5-5-env-文件">5.5 <code>.env</code>文件</h3>
+
+<p>可以创建 <code>.env</code> 文件，然后指定变量。 <code>.env</code> 中的变量可以在 <em>compose</em> 文件中使用。</p>
+
+<p><em>.env：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">IMAGE_NAME=env</pre></td></tr></table>
+</div>
+</div>
+<p><em>docker-compose.yml：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-yaml" data-lang="yaml">version<span class="p">:</span><span class="w"> </span><span class="s1">&#39;2.4&#39;</span><span class="w">
+</span><span class="w"></span>services<span class="p">:</span><span class="w">  
+</span><span class="w">  </span>env<span class="p">:</span><span class="w">
+</span><span class="w">    </span>image<span class="p">:</span><span class="w"> </span>${IMAGE_NAME}</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">Docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">容器系列（三）：Docker基础镜像</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html">
+            <span class="next-text nav-default">容器系列（一）：Docker环境准备</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" class="leancloud_visitors" data-flag-title="容器系列（二）：Docker-compose环境准备">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

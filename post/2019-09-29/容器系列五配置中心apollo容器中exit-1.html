@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>容器系列（五）：配置中心Apollo容器中Exit 1 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. 问题描述 在容器中运行 Apollo 相关的3个程序时，在运行一段时间后程序自动退出。通过 docker ps -a 查看到容器退出状态码为 1 。 2. 问题排查 本次因为是在一台宿主机" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%94%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83apollo%E5%AE%B9%E5%99%A8%E4%B8%ADexit-1.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="容器系列（五）：配置中心Apollo容器中Exit 1" />
+<meta property="og:description" content="1. 问题描述 在容器中运行 Apollo 相关的3个程序时，在运行一段时间后程序自动退出。通过 docker ps -a 查看到容器退出状态码为 1 。 2. 问题排查 本次因为是在一台宿主机" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%94%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83apollo%E5%AE%B9%E5%99%A8%E4%B8%ADexit-1.html" />
+<meta property="article:published_time" content="2019-09-29T13:41:56+08:00" />
+<meta property="article:modified_time" content="2019-09-29T13:41:56+08:00" />
+<meta itemprop="name" content="容器系列（五）：配置中心Apollo容器中Exit 1">
+<meta itemprop="description" content="1. 问题描述 在容器中运行 Apollo 相关的3个程序时，在运行一段时间后程序自动退出。通过 docker ps -a 查看到容器退出状态码为 1 。 2. 问题排查 本次因为是在一台宿主机">
+
+
+<meta itemprop="datePublished" content="2019-09-29T13:41:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-29T13:41:56&#43;08:00" />
+<meta itemprop="wordCount" content="2322">
+
+
+
+<meta itemprop="keywords" content="Docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器系列（五）：配置中心Apollo容器中Exit 1"/>
+<meta name="twitter:description" content="1. 问题描述 在容器中运行 Apollo 相关的3个程序时，在运行一段时间后程序自动退出。通过 docker ps -a 查看到容器退出状态码为 1 。 2. 问题排查 本次因为是在一台宿主机"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">容器系列（五）：配置中心Apollo容器中Exit 1</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-29 </span>
+        <div class="post-category">
+            <a href="/categories/docker/"> Docker </a>
+            </div>
+          <span class="more-meta"> 约 2322 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-问题描述">1. 问题描述</a></li>
+<li><a href="#2-问题排查">2. 问题排查</a>
+<ul>
+<li><a href="#2-1-通过docker-event查看事件">2.1 通过docker event查看事件</a></li>
+<li><a href="#2-2-监控系统日志">2.2 监控系统日志</a></li>
+<li><a href="#2-3-编写脚本查看评分最高进程">2.3 编写脚本查看评分最高进程</a></li>
+<li><a href="#2-4-docker-inspect查看退出容器的状态">2.4 docker inspect查看退出容器的状态</a></li>
+<li><a href="#2-5-查看docker服务日志">2.5 查看Docker服务日志</a></li>
+<li><a href="#2-6-zabbix官方容器问题">2.6 Zabbix官方容器问题</a></li>
+</ul></li>
+<li><a href="#3-问题解决">3. 问题解决</a></li>
+<li><a href="#4-总结">4. 总结</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-问题描述">1. 问题描述</h2>
+
+<p>在容器中运行 <em>Apollo</em> 相关的3个程序时，在运行一段时间后程序自动退出。通过 <code>docker ps -a</code> 查看到容器退出状态码为 <code>1</code> 。</p>
+
+<h2 id="2-问题排查">2. 问题排查</h2>
+
+<p>本次因为是在一台宿主机上运行了19个容器，所以最初怀疑是内存原因，容器进程因 <em>OOM</em> 被系统给 <em>Kill</em> 掉了。</p>
+
+<h3 id="2-1-通过docker-event查看事件">2.1 通过docker event查看事件</h3>
+
+<p>通过 <em>docker event</em> 命令查看这段时间内的事件信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">t0</span><span class="o">=</span><span class="k">$(</span>date <span class="s2">&#34;+%Y-%m-%dT%H:%M:%S&#34;</span><span class="k">)</span>
+
+...容器执行各种操作
+
+<span class="nv">t1</span><span class="o">=</span><span class="k">$(</span>date <span class="s2">&#34;+%Y-%m-%dT%H:%M:%S&#34;</span><span class="k">)</span>
+docker events --since <span class="nv">$t0</span> --until <span class="nv">$t1</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>输出结果如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[root@localhost build]# docker events --since $t0 --until $t1
+2019-09-22T02:08:03.772408118-07:00 container die a54711efd65de9aeb34a93813a2b7536849301733118a0730cbc57479d374304 (com.docker.compose.config-hash=ccf1e706778f960e6038a6e4b10e74e815d652f9ce957c2b56d1cfa4dadf982d, com.docker.compose.container-number=1, com.docker.compose.oneoff=False, com.docker.compose.project=build, com.docker.compose.service=apollo-configservice, com.docker.compose.version=1.24.1, exitCode=1, image=apollo-configservice:latest, maintainer=zxb@dameng.com, name=build_apollo-configservice_1)
+2019-09-22T02:08:03.855373609-07:00 network disconnect d3a2cd8c37ea28abbad6d57992927e67c5f4474cdabedaeb986bf907756b701c (container=a54711efd65de9aeb34a93813a2b7536849301733118a0730cbc57479d374304, name=build_default, type=bridge)
+2019-09-22T02:08:51.944998037-07:00 container die 673c3080ee7a772fa5b27fe76801cd0829d2a4daebeea16eb1db9610d17893fa (com.docker.compose.config-hash=06ebc8e4f6b8ceae485ce7d61e4f843cb33eabfabe3d2c46145246a44258f5f9, com.docker.compose.container-number=1, com.docker.compose.oneoff=False, com.docker.compose.project=build, com.docker.compose.service=apollo-portal, com.docker.compose.version=1.24.1, exitCode=1, image=apollo-portal:latest, maintainer=zxb@dameng.com, name=build_apollo-portal_1)
+2019-09-22T02:08:52.043329440-07:00 network disconnect d3a2cd8c37ea28abbad6d57992927e67c5f4474cdabedaeb986bf907756b701c (container=673c3080ee7a772fa5b27fe76801cd0829d2a4daebeea16eb1db9610d17893fa, name=build_default, type=bridge)
+2019-09-22T02:08:52.358787327-07:00 container die cf7ec2f076db2e242032764ccb3ee0f9cd6e0d358b6bd2e1fbd04c5c79f849f3 (com.docker.compose.config-hash=23f1c8cb2bd756202a97c4f9917c08fb0ad43e30bcbe4b9b4cc1fbd4ee655be6, com.docker.compose.container-number=1, com.docker.compose.oneoff=False, com.docker.compose.project=build, com.docker.compose.service=apollo-adminservice, com.docker.compose.version=1.24.1, exitCode=1, image=apollo-adminservice:latest, maintainer=zxb@dameng.com, name=build_apollo-adminservice_1)
+2019-09-22T02:08:52.442668740-07:00 network disconnect d3a2cd8c37ea28abbad6d57992927e67c5f4474cdabedaeb986bf907756b701c (container=cf7ec2f076db2e242032764ccb3ee0f9cd6e0d358b6bd2e1fbd04c5c79f849f3, name=build_default, type=bridge)</pre></td></tr></table>
+</div>
+</div>
+<p>事件日志中只提到了退出状态为 <code>1</code> ，没有其它有用的信息。</p>
+
+<h3 id="2-2-监控系统日志">2.2 监控系统日志</h3>
+
+<p>另开一个 <em>shell</em> 窗口输出系统日志信息</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">tail -f /var/log/*</pre></td></tr></table>
+</div>
+</div>
+<p>当 <em>apollo</em> 3个容器退出时，系统输出日志内容如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">==&gt; /var/log/messages &lt;==
+Sep 22 02:08:03 localhost containerd: time=&#34;2019-09-22T02:08:03.761967227-07:00&#34; level=info msg=&#34;shim reaped&#34; id=a54711efd65de9aeb34a93813a2b7536849301733118a0730cbc57479d374304
+Sep 22 02:08:03 localhost dockerd: time=&#34;2019-09-22T02:08:03.772246942-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;
+Sep 22 02:08:03 localhost kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:03 localhost NetworkManager[778]: &lt;info&gt;  [1569143283.8185] manager: (veth8ff332e): new Veth device (/org/freedesktop/NetworkManager/Devices/13)
+Sep 22 02:08:03 localhost kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:03 localhost kernel: device veth48561d1 left promiscuous mode
+Sep 22 02:08:03 localhost kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:03 localhost NetworkManager[778]: &lt;info&gt;  [1569143283.8371] device (veth48561d1): released from master device br-d3a2cd8c37ea
+Sep 22 02:08:51 localhost containerd: time=&#34;2019-09-22T02:08:51.934787792-07:00&#34; level=info msg=&#34;shim reaped&#34; id=673c3080ee7a772fa5b27fe76801cd0829d2a4daebeea16eb1db9610d17893fa
+Sep 22 02:08:51 localhost dockerd: time=&#34;2019-09-22T02:08:51.945035345-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;
+Sep 22 02:08:51 localhost NetworkManager[778]: &lt;info&gt;  [1569143331.9902] manager: (veth47cfd10): new Veth device (/org/freedesktop/NetworkManager/Devices/14)
+Sep 22 02:08:51 localhost kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 02:08:52 localhost kernel: device veth452499b left promiscuous mode
+Sep 22 02:08:52 localhost kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 02:08:52 localhost NetworkManager[778]: &lt;info&gt;  [1569143332.0177] device (veth452499b): released from master device br-d3a2cd8c37ea
+Sep 22 02:08:52 localhost containerd: time=&#34;2019-09-22T02:08:52.348968105-07:00&#34; level=info msg=&#34;shim reaped&#34; id=cf7ec2f076db2e242032764ccb3ee0f9cd6e0d358b6bd2e1fbd04c5c79f849f3
+Sep 22 02:08:52 localhost dockerd: time=&#34;2019-09-22T02:08:52.358812192-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;
+Sep 22 02:08:52 localhost kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 02:08:52 localhost NetworkManager[778]: &lt;info&gt;  [1569143332.4038] manager: (veth50a3fa2): new Veth device (/org/freedesktop/NetworkManager/Devices/15)
+Sep 22 02:08:52 localhost kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 02:08:52 localhost kernel: device vethbfa3795 left promiscuous mode
+Sep 22 02:08:52 localhost kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 02:08:52 localhost NetworkManager[778]: &lt;info&gt;  [1569143332.4180] device (vethbfa3795): released from master device br-d3a2cd8c37ea</pre></td></tr></table>
+</div>
+</div>
+<p>从上面这段日志，只是大致能看出容器退出的一些操作，没有发现其它有用的信息。</p>
+
+<h3 id="2-3-编写脚本查看评分最高进程">2.3 编写脚本查看评分最高进程</h3>
+
+<p><a href="https://docs.docker.com/config/containers/resource_constraints/">参考官方文档</a>
+在 <em>Linux</em> 系统中， 当系统内存不足时，会抛出 <em>OOM</em> 异常，并开始杀死一些进程用于释放内存空间。所有的进程都可能会被杀死，当然也包括 <em>docker daemon</em> 和其它一些应用进程。如果 <em>docker daemon</em> 也被杀掉了，就意味着宿主机上所有的容器都不能工作了。</p>
+
+<p><em>Docker</em> 通过调整自身 <em>docker daemon</em> 进程的 <em>OOM</em> 优先级来缓解这个问题，但是，容器进程的优先级是没有被调整的。系统在杀死进程时会先给进程打分，评分最高的进程会优先被杀死。</p>
+
+<p>下面这个脚本用于输出评分最高的40个进程</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span><span class="k">for</span> proc in <span class="k">$(</span>find /proc -maxdepth <span class="m">1</span> -regex <span class="s1">&#39;/proc/[0-9]+&#39;</span><span class="k">)</span><span class="p">;</span> <span class="k">do</span>
+<span class="nb">printf</span> <span class="s2">&#34;%2d %5d %s\n&#34;</span> <span class="se">\
+</span><span class="se"></span><span class="s2">&#34;</span><span class="k">$(</span>cat <span class="nv">$proc</span>/oom_score<span class="k">)</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span><span class="s2">&#34;</span><span class="k">$(</span>basename <span class="nv">$proc</span><span class="k">)</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span><span class="s2">&#34;</span><span class="k">$(</span>cat <span class="nv">$proc</span>/cmdline <span class="p">|</span> tr <span class="s1">&#39;\0&#39;</span> <span class="s1">&#39; &#39;</span> <span class="p">|</span> head -c <span class="m">50</span><span class="k">)</span><span class="s2">&#34;</span>
+<span class="k">done</span> <span class="m">2</span>&gt;/dev/null <span class="p">|</span> sort -nr <span class="p">|</span> head -n <span class="m">40</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>该脚本运行后，排在前3名的也确实是 <em>apollo</em> 的3个进程。</p>
+
+<p>但是上面通过查看系统日志或者 <code>dmesg</code> 均未找到 <em>OOM</em> 相关字样。</p>
+
+<h3 id="2-4-docker-inspect查看退出容器的状态">2.4 docker inspect查看退出容器的状态</h3>
+
+<p><em>docker inspect 容器ID</em>  可以查看容器退出状态，如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&#34;State&#34;: {
+            &#34;Status&#34;: &#34;exited&#34;,
+            &#34;Running&#34;: false,
+            &#34;Paused&#34;: false,
+            &#34;Restarting&#34;: false,
+            &#34;OOMKilled&#34;: false,
+            &#34;Dead&#34;: false,
+            &#34;Pid&#34;: 0,
+            &#34;ExitCode&#34;: 1,
+            &#34;Error&#34;: &#34;&#34;,
+            &#34;StartedAt&#34;: &#34;2019-09-22T08:55:56.163083467Z&#34;,
+            &#34;FinishedAt&#34;: &#34;2019-09-22T09:08:03.511086263Z&#34;
+        }</pre></td></tr></table>
+</div>
+</div>
+<p>状态中的 <code>OOMKilled</code> 这项显示为 <code>false</code> ，说明容器应该并非因 <em>OOM</em> 然后被杀死的。</p>
+
+<h3 id="2-5-查看docker服务日志">2.5 查看Docker服务日志</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">journalctl -u docker.service</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Sep 22 01:50:13 localhost.localdomain systemd[1]: Started Docker Application Container Engine.
+Sep 22 02:08:03 localhost.localdomain dockerd[1876]: time=&#34;2019-09-22T02:08:03.772246942-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;
+Sep 22 02:08:51 localhost.localdomain dockerd[1876]: time=&#34;2019-09-22T02:08:51.945035345-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;
+Sep 22 02:08:52 localhost.localdomain dockerd[1876]: time=&#34;2019-09-22T02:08:52.358812192-07:00&#34; level=info msg=&#34;ignoring event&#34; module=libcontainerd namespace=moby topic=/tasks/delete type=&#34;*events.TaskDelete&#34;</pre></td></tr></table>
+</div>
+</div>
+<p>查看全部服务日志</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">journalctl -k</code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">Sep 22 01:55:56 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered blocking state
+Sep 22 01:55:56 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered forwarding state
+Sep 22 01:55:56 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 01:55:58 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+Sep 22 01:55:58 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+Sep 22 01:55:58 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_CHANGE): vethbfa3795: link becomes ready
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered blocking state
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered forwarding state
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered blocking state
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 01:55:58 localhost.localdomain kernel: device veth452499b entered promiscuous mode
+Sep 22 01:55:58 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_UP): veth452499b: link is not ready
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered blocking state
+Sep 22 01:55:58 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered forwarding state
+Sep 22 01:55:59 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 01:56:00 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+Sep 22 01:56:00 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+Sep 22 01:56:00 localhost.localdomain kernel: IPv6: ADDRCONF(NETDEV_CHANGE): veth452499b: link becomes ready
+Sep 22 01:56:00 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered blocking state
+Sep 22 01:56:00 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered forwarding state
+Sep 22 02:08:03 localhost.localdomain kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:03 localhost.localdomain kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:03 localhost.localdomain kernel: device veth48561d1 left promiscuous mode
+Sep 22 02:08:03 localhost.localdomain kernel: br-d3a2cd8c37ea: port 2(veth48561d1) entered disabled state
+Sep 22 02:08:51 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 02:08:52 localhost.localdomain kernel: device veth452499b left promiscuous mode
+Sep 22 02:08:52 localhost.localdomain kernel: br-d3a2cd8c37ea: port 4(veth452499b) entered disabled state
+Sep 22 02:08:52 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 02:08:52 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+Sep 22 02:08:52 localhost.localdomain kernel: device vethbfa3795 left promiscuous mode
+Sep 22 02:08:52 localhost.localdomain kernel: br-d3a2cd8c37ea: port 3(vethbfa3795) entered disabled state
+(END)</pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-6-zabbix官方容器问题">2.6 Zabbix官方容器问题</h3>
+
+<p><em>zabbix</em> 官方容器中也存在类似的问题，<a href="https://support.zabbix.com/browse/ZBX-15208?jql=text%20~%20%22(sigsegv%20%7C%7C%20crash)%22%20ORDER%20BY%20updated%20DESC">issue</a>中提到子进程的退出会导致父进程的退出。</p>
+
+<p>登录到 <em>apollo</em> 容器中，发现确实存在非 <em>java</em> 进程的子进程。
+<img src="./images/1569164225565.png" alt="Alt text" /></p>
+
+<p>启动脚本中的 <em>curl</em> 命令用于检测 <em>apollo</em> 服务是否正常启动。</p>
+
+<p><em>Apollo中的startup.sh</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">...省略上面的部分内容
+./<span class="nv">$SERVICE_NAME</span><span class="s2">&#34;.jar&#34;</span> start
+
+<span class="nv">rc</span><span class="o">=</span><span class="nv">$?</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="o">[[</span> <span class="nv">$rc</span> !<span class="o">=</span> <span class="m">0</span> <span class="o">]]</span><span class="p">;</span>
+<span class="k">then</span>
+    <span class="nb">echo</span> <span class="s2">&#34;</span><span class="k">$(</span>date<span class="k">)</span><span class="s2"> Failed to start </span><span class="nv">$SERVICE_NAME</span><span class="s2">.jar, return code: </span><span class="nv">$rc</span><span class="s2">&#34;</span>
+    <span class="nb">exit</span> <span class="nv">$rc</span><span class="p">;</span>
+<span class="k">fi</span>
+
+<span class="nb">declare</span> -i <span class="nv">counter</span><span class="o">=</span><span class="m">0</span>
+<span class="nb">declare</span> -i <span class="nv">max_counter</span><span class="o">=</span><span class="m">48</span> <span class="c1"># 48*5=240s</span>
+<span class="nb">declare</span> -i <span class="nv">total_time</span><span class="o">=</span><span class="m">0</span>
+
+<span class="nb">printf</span> <span class="s2">&#34;Waiting for server startup&#34;</span>
+<span class="k">until</span> <span class="o">[[</span> <span class="o">((</span> counter -ge max_counter <span class="o">))</span> <span class="o">||</span> <span class="s2">&#34;</span><span class="k">$(</span>curl -X GET --silent --connect-timeout <span class="m">1</span> --max-time <span class="m">10</span> --head <span class="nv">$SERVER_URL</span> <span class="p">|</span> grep <span class="s2">&#34;Coyote&#34;</span><span class="k">)</span><span class="s2">&#34;</span> !<span class="o">=</span> <span class="s2">&#34;&#34;</span> <span class="o">]]</span><span class="p">;</span>
+<span class="k">do</span>
+    <span class="nb">printf</span> <span class="s2">&#34;.&#34;</span>
+    <span class="nv">counter</span><span class="o">+=</span><span class="m">1</span>
+    sleep <span class="m">5</span>
+
+    checkPidAlive
+<span class="k">done</span>
+
+<span class="nv">total_time</span><span class="o">=</span>counter*5
+
+<span class="k">if</span> <span class="o">[[</span> <span class="o">((</span> counter -ge max_counter <span class="o">))</span> <span class="o">]]</span><span class="p">;</span>
+<span class="k">then</span>
+    <span class="nb">printf</span> <span class="s2">&#34;\n</span><span class="k">$(</span>date<span class="k">)</span><span class="s2"> Server failed to start in </span><span class="nv">$total_time</span><span class="s2"> seconds!\n&#34;</span>
+    <span class="nb">exit</span> <span class="m">1</span><span class="p">;</span>
+<span class="k">fi</span>
+...省略下面部分内容</code></pre></td></tr></table>
+</div>
+</div>
+<p>该脚本在程序启动后会一直检测服务是否正常启动了，当超时后就会退出（<code>exit 1</code>）。该脚本在容器环境下哪怕 <em>Apollo</em> 服务启动后也会最后因检测超时退出。</p>
+
+<h2 id="3-问题解决">3. 问题解决</h2>
+
+<p>从上面分析发现最终的问题还是启动脚本的问题，在脚本中添加了检测服务是否正常启动的逻辑，当启动超时后就直接退出。</p>
+
+<p><em>Apollo</em> 的几个程序均为 <em>Spring Boot</em> 程序，而 <em>Spring Boot</em>  程序在容器中完全没必要单独再写启动脚本来运行，也不需要仅仅为了打印出最后一句服务已启动的日志就添加一个 <em>curl</em> 一直不停地检测。</p>
+
+<p>解决方法很简单，直接用 <code>java -jar</code> 方式启动程序。</p>
+
+<p><strong>完整的Apollo-ConfigService的Dockerfile</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">ARG <span class="nv">SERVICE_NAME</span><span class="o">=</span><span class="s2">&#34;apollo-configservice&#34;</span>
+ARG <span class="nv">VERSION</span><span class="o">=</span><span class="s2">&#34;0.10.2&#34;</span>
+
+<span class="c1"># unzip package</span>
+FROM base-alpine:latest AS build
+LABEL <span class="nv">maintainer</span><span class="o">=</span><span class="s2">&#34;zxb@dameng.com&#34;</span>
+ARG SERVICE_NAME
+ARG VERSION
+
+COPY <span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>-github.zip /<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>-github.zip
+COPY wait-for-it.sh /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/wait-for-it.sh
+RUN chmod +x /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/wait-for-it.sh <span class="se">\ </span>   
+    <span class="o">&amp;&amp;</span> unzip /<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>-github.zip -d /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span> <span class="se">\
+</span><span class="se"></span>    <span class="o">&amp;&amp;</span> rm -rf /<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>-github.zip
+
+<span class="c1"># This results in a single layer image</span>
+FROM jdk8:latest
+ARG SERVICE_NAME
+ARG VERSION
+
+ENV <span class="nv">SERVER_PORT</span><span class="o">=</span><span class="s2">&#34;8180&#34;</span>
+ENV <span class="nv">LOG_DIR</span><span class="o">=</span><span class="s2">&#34;/opt/logs/</span><span class="nv">$SERVICE_NAME</span><span class="s2">&#34;</span>
+ENV <span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">&#34;-server -Xmx384m -Xms128m -Dserver.port=</span><span class="nv">$SERVER_PORT</span><span class="s2"> -Dlogging.file=</span><span class="nv">$LOG_DIR</span><span class="s2">/</span><span class="nv">$SERVICE_NAME</span><span class="s2">.log -Xloggc:</span><span class="nv">$LOG_DIR</span><span class="s2">/heap_trace.txt -XX:HeapDumpPath=</span><span class="nv">$LOG_DIR</span><span class="s2">/HeapDumpOnOutOfMemoryError/ -XX:+UseParNewGC -XX:ParallelGCThreads=4 -XX:MaxTenuringThreshold=9 -XX:+UseConcMarkSweepGC -XX:+DisableExplicitGC -XX:+UseCMSInitiatingOccupancyOnly -XX:+ScavengeBeforeFullGC -XX:+UseCMSCompactAtFullCollection -XX:+CMSParallelRemarkEnabled -XX:CMSFullGCsBeforeCompaction=9 -XX:CMSInitiatingOccupancyFraction=60 -XX:+CMSClassUnloadingEnabled -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+CMSPermGenSweepingEnabled -XX:CMSInitiatingPermOccupancyFraction=70 -XX:+ExplicitGCInvokesConcurrent -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Duser.timezone=Asia/Shanghai -Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom&#34;</span>
+COPY --from<span class="o">=</span>build /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span> /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>
+RUN apk add --no-cache curl <span class="se">\
+</span><span class="se"></span>    <span class="o">&amp;&amp;</span> rm -rf /var/cache/apk/* <span class="se">\
+</span><span class="se"></span>    <span class="o">&amp;&amp;</span> ln -s /opt/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>/<span class="si">${</span><span class="nv">SERVICE_NAME</span><span class="si">}</span>-<span class="si">${</span><span class="nv">VERSION</span><span class="si">}</span>.jar /bin/apollo.jar 
+EXPOSE <span class="si">${</span><span class="nv">SERVER_PORT</span><span class="si">}</span>
+ENTRYPOINT <span class="o">[</span><span class="s2">&#34;sh&#34;</span>, <span class="s2">&#34;-c&#34;</span>, <span class="s2">&#34;java </span><span class="nv">$JAVA_OPTS</span><span class="s2"> -jar /bin/apollo.jar&#34;</span><span class="o">]</span></code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-总结">4. 总结</h2>
+
+<ol>
+<li>起初虽然注意到 <em>Apollo</em> 启动脚本中 <em>exit 1</em> 的逻辑，但是该脚本在 <em>CentOS</em> 下运行正常，在容器环境下便未再多想。对程序都应该抱怀疑的态度。</li>
+<li>假设因 <em>OOM</em> 被 <em>kill</em> ，在这个方向上浪费了太多时间。</li>
+<li>在容器中只用 <em>jstat</em> 观察过内存情况，但是未观察进程情况。</li>
+</ol>
+
+<p><strong>简单的问题不要复杂化</strong>，<strong>找问题的方向也很重要</strong></p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">Docker</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E5%9B%9B%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E6%9E%84%E5%BB%BA.html">
+            <span class="next-text nav-default">容器系列（四）：基础组件构建</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%94%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83apollo%E5%AE%B9%E5%99%A8%E4%B8%ADexit-1.html" class="leancloud_visitors" data-flag-title="容器系列（五）：配置中心Apollo容器中Exit 1">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

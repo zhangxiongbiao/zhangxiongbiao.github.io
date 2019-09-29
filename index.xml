@@ -6,7 +6,7 @@
     <description>Recent content on 张雄彪的博客</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sun, 25 Aug 2019 21:14:56 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 29 Sep 2019 13:41:56 +0800</lastBuildDate>
     
 	<atom:link href="http://zhangxiongbiao.com/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,60 @@
       
       <guid>http://zhangxiongbiao.com/about.html</guid>
       <description>Hi~ GitHub</description>
+    </item>
+    
+    <item>
+      <title>容器系列（五）：配置中心Apollo容器中Exit 1</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%94%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83apollo%E5%AE%B9%E5%99%A8%E4%B8%ADexit-1.html</link>
+      <pubDate>Sun, 29 Sep 2019 13:41:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%94%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83apollo%E5%AE%B9%E5%99%A8%E4%B8%ADexit-1.html</guid>
+      <description>1. 问题描述 在容器中运行 Apollo 相关的3个程序时，在运行一段时间后程序自动退出。通过 docker ps -a 查看到容器退出状态码为 1 。 2. 问题排查 本次因为是在一台宿主机</description>
+    </item>
+    
+    <item>
+      <title>容器系列（四）：基础组件构建</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E5%9B%9B%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E6%9E%84%E5%BB%BA.html</link>
+      <pubDate>Sun, 29 Sep 2019 12:41:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E5%9B%9B%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E6%9E%84%E5%BB%BA.html</guid>
+      <description>1. DM7镜像制作 DM7镜像制作，主要分为3个步骤： 添加安装包 dminit执行初始化 启动dmserver 1. 添加安装包 DM7镜像制作时，只需要d</description>
+    </item>
+    
+    <item>
+      <title>容器系列（三）：Docker基础镜像</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html</link>
+      <pubDate>Sun, 29 Sep 2019 11:41:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html</guid>
+      <description>1. Base镜像的选择 Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗</description>
+    </item>
+    
+    <item>
+      <title>容器系列（二）：Docker-compose环境准备</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html</link>
+      <pubDate>Sun, 29 Sep 2019 11:37:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html</guid>
+      <description>1. 安装docker-compose docker-compose 依赖于 docker engine ，在安装 docker-compose 前应先安装好 docker 。 参考compose官方安装文档 2. 网络通讯 官方参考文档 在不指定 network 的情况</description>
+    </item>
+    
+    <item>
+      <title>容器系列（一）：Docker环境准备</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html</link>
+      <pubDate>Sun, 29 Sep 2019 10:37:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html</guid>
+      <description>1. 安装Docker 根据宿主机操作系统，选择对应版本的安装方法。 CentOS：https://docs.docker.com/install/</description>
+    </item>
+    
+    <item>
+      <title>容器系列（零）：通过容器方式搭建应用程序</title>
+      <link>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E9%9B%B6%E9%80%9A%E8%BF%87%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F.html</link>
+      <pubDate>Sun, 29 Sep 2019 09:37:56 +0800</pubDate>
+      
+      <guid>http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E9%9B%B6%E9%80%9A%E8%BF%87%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F.html</guid>
+      <description>近期因需要在本机环境下搭建一个演示环境，因应用程序本身为分布式应用程序，组件较多，为方便部署完成后迁移，遂采用 docker 方式部署。 本次从基本镜像逐步</description>
     </item>
     
     <item>

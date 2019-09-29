@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>容器系列（一）：Docker环境准备 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. 安装Docker 根据宿主机操作系统，选择对应版本的安装方法。 CentOS：https://docs.docker.com/install/" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="容器系列（一）：Docker环境准备" />
+<meta property="og:description" content="1. 安装Docker 根据宿主机操作系统，选择对应版本的安装方法。 CentOS：https://docs.docker.com/install/" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" />
+<meta property="article:published_time" content="2019-09-29T10:37:56+08:00" />
+<meta property="article:modified_time" content="2019-09-29T10:37:56+08:00" />
+<meta itemprop="name" content="容器系列（一）：Docker环境准备">
+<meta itemprop="description" content="1. 安装Docker 根据宿主机操作系统，选择对应版本的安装方法。 CentOS：https://docs.docker.com/install/">
+
+
+<meta itemprop="datePublished" content="2019-09-29T10:37:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-29T10:37:56&#43;08:00" />
+<meta itemprop="wordCount" content="1084">
+
+
+
+<meta itemprop="keywords" content="Docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器系列（一）：Docker环境准备"/>
+<meta name="twitter:description" content="1. 安装Docker 根据宿主机操作系统，选择对应版本的安装方法。 CentOS：https://docs.docker.com/install/"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">容器系列（一）：Docker环境准备</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-29 </span>
+        <div class="post-category">
+            <a href="/categories/docker/"> Docker </a>
+            </div>
+          <span class="more-meta"> 约 1084 字 </span>
+          <span class="more-meta"> 预计阅读 3 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-安装docker">1. 安装Docker</a></li>
+<li><a href="#2-使普通用户可执行docker命令">2. 使普通用户可执行docker命令</a></li>
+<li><a href="#3-迁移docker数据目录">3. 迁移docker数据目录</a></li>
+<li><a href="#4-配置docker-hub镜像地址">4. 配置docker hub镜像地址</a></li>
+<li><a href="#5-配置docker代理">5. 配置docker代理</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-安装docker">1. 安装Docker</h2>
+
+<p>根据宿主机操作系统，选择对应版本的安装方法。</p>
+
+<p><strong>CentOS</strong>：<a href="https://docs.docker.com/install/linux/docker-ce/centos/">https://docs.docker.com/install/linux/docker-ce/centos/</a></p>
+
+<h2 id="2-使普通用户可执行docker命令">2. 使普通用户可执行docker命令</h2>
+
+<p>默认情况下， <em>docker</em> 守护进程是绑定到了一个 <em>Unix socket</em> ，并且只有 <em>root</em> 用户可以访问这个 <em>Socket</em> ，所以在执行 <em>docker</em> 命令时只能使用 <em>sudo</em> 命令执行。</p>
+
+<p>高版本的 <em>Docker</em> 中支持了使用非 <em>root</em> 用户执行 <em>docker</em> 命令，具体参考<a href="https://docs.docker.com/install/linux/linux-postinstall/">官网参考文档</a>。</p>
+
+<p><strong>1. 创建docker用户组</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo groupadd docker</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>2. 添加用户到docker用户组</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sudo usermod -aG docker <span class="nv">$USER</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>3. 重新登录</strong>
+重新登录会话，使用户组更改可生效
+<strong>4. 测试使用命令</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">docker ps -a</code></pre></td></tr></table>
+</div>
+</div>
+<p><img src="./images/1569383892510.png" alt="Alt text" /></p>
+
+<h2 id="3-迁移docker数据目录">3. 迁移docker数据目录</h2>
+
+<p>由于是在本机虚拟机上，根目录的磁盘空间并不大，在安装完 <em>docker</em> 并下载了一些镜像后，发现磁盘空间不够用，所以就涉及到将 <em>docker</em> 的数据目录迁移到其它存储空间足够的盘上。</p>
+
+<p><em>docker</em> 默认是将数据存储在 <code>/var/lib/docker</code> 目录下的，修改存储路径需要修改 <em>docker</em> 配置文件并重启 <em>docker</em> 服务。</p>
+
+<p>具体步骤如下：</p>
+
+<p><strong>1. 将 <em>docker</em> 停止</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">systemctl stop docker</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>2. 移动docker数据目录</strong>
+本次操作前，已经下载及制作了部分镜像。为方便使用，这里将原先的数据移动到新目录 <code>/docker/data</code> 下。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">mv /var/lib/docker /docker/data</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>3. 重新指定数据目录</strong>
+<code>vim /etc/docker/daemon.json</code>，添加<code>&quot;data-root&quot;: &quot;/docker/data&quot;</code>配置。例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">{
+  &#34;data-root&#34;: &#34;/docker/data&#34;
+}</pre></td></tr></table>
+</div>
+</div>
+<p><strong>4. 启动docker服务</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">systemctl start docker</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-配置docker-hub镜像地址">4. 配置docker hub镜像地址</h2>
+
+<p>在使用 <em>docker pull</em> 下载 <em>Docker Hub</em> 上的镜像时，因为网络问题访问速度较慢。基于这种情况，国内提供了很多 <em>docker hub</em> 镜像私服。</p>
+
+<table>
+<thead>
+<tr>
+<th align="left">镜像名称</th>
+<th align="right">镜像地址</th>
+<th align="center">备注</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="left">Docker中国官方镜像</td>
+<td align="right"><a href="https://registry.docker-cn.com">https://registry.docker-cn.com</a></td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">Azure中国镜像</td>
+<td align="right"><a href="https://dockerhub.azk8s.cn">https://dockerhub.azk8s.cn</a></td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">科大镜像</td>
+<td align="right"><a href="https://docker.mirrors.ustc.edu.cn">https://docker.mirrors.ustc.edu.cn</a></td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">阿里云</td>
+<td align="right"><code>https://&lt;your_code&gt;.mirror.aliyuncs.com</code></td>
+<td align="center">需要登录，获取code</td>
+</tr>
+
+<tr>
+<td align="left">七牛云</td>
+<td align="right"><a href="https://reg-mirror.qiniu.com">https://reg-mirror.qiniu.com</a></td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">网易云</td>
+<td align="right"><a href="https://hub-mirror.c.163.com">https://hub-mirror.c.163.com</a></td>
+<td align="center"></td>
+</tr>
+
+<tr>
+<td align="left">腾讯云</td>
+<td align="right"><a href="https://mirror.ccs.tencentyun.com">https://mirror.ccs.tencentyun.com</a></td>
+<td align="center"></td>
+</tr>
+</tbody>
+</table>
+
+<p><strong>配置Docker Hub镜像</strong>
+编辑 <em>daemon.json</em> 文件：<code>vim /etc/docker/daemon.json</code>，添加配置：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&#34;registry-mirrors&#34;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&#34;https://hub-mirror.c.163.com&#34;</span><span class="p">]</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>使用 <em>docker info</em> 命令可以查看当前配置的 <em>Docker Hub镜像</em> 信息。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">Registry Mirrors:
+ <span class="o">[</span>...<span class="o">]</span>
+ https://registry.docker-cn.com/</code></pre></td></tr></table>
+</div>
+</div>
+<h2 id="5-配置docker代理">5. 配置docker代理</h2>
+
+<p>在编写 <em>DockerFile</em> 构建镜像时，在RUN一些命令时，如 <em>apt add</em> ， <em>curl</em> 等命令，如果未配置代理，连接及下载会非常慢。</p>
+
+<p>参考<a href="https://docs.docker.com/network/proxy/">官方文档</a>，可以为 <em>docker</em> 配置代理。</p>
+
+<p><strong>配置步骤</strong></p>
+
+<ol>
+<li>编辑 <code>~/.docker/config.json</code> 文件，如果没有则创建一个。</li>
+
+<li><p>添加如下配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+<span class="nt">&#34;proxies&#34;</span><span class="p">:</span>
+<span class="p">{</span>
+<span class="nt">&#34;default&#34;</span><span class="p">:</span>
+<span class="p">{</span>
+ <span class="nt">&#34;httpProxy&#34;</span><span class="p">:</span> <span class="s2">&#34;http://192.168.52.1:1080&#34;</span><span class="p">,</span>
+ <span class="nt">&#34;httpsProxy&#34;</span><span class="p">:</span> <span class="s2">&#34;http://192.168.52.1:1080&#34;</span><span class="p">,</span>
+ <span class="nt">&#34;noProxy&#34;</span><span class="p">:</span> <span class="s2">&#34;aliyun.com,192.168.52.1&#34;</span>
+<span class="p">}</span>
+<span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p>请根据实际情况替换为自己的代理地址
+* httpPorxy：配置http代理
+* httpsProxy：配置https代理
+* noProxy：配置哪些域名不走代理。<code>aliyun.com</code>表示该域名及其子域名不走代理，<code>*.aliyun.com</code>表示其子域名不走代理。</p>
+</blockquote></li>
+</ol>
+
+<p><strong>提示：</strong>
+值得一提的是，配置代理后<code>wget</code>命令好像一直未走代理，此问题 <em>待解决</em> 。</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">Docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">容器系列（二）：Docker-compose环境准备</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E9%9B%B6%E9%80%9A%E8%BF%87%E5%AE%B9%E5%99%A8%E6%96%B9%E5%BC%8F%E6%90%AD%E5%BB%BA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F.html">
+            <span class="next-text nav-default">容器系列（零）：通过容器方式搭建应用程序</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%80docker%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html" class="leancloud_visitors" data-flag-title="容器系列（一）：Docker环境准备">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

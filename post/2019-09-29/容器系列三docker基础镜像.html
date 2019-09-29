@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>容器系列（三）：Docker基础镜像 - 张雄彪的博客</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="张雄彪" /><meta name="description" content="1. Base镜像的选择 Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗" /><meta name="keywords" content="张雄彪, ZhangXiongBiao" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2 with even 4.0.0" />
+
+
+<link rel="canonical" href="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="容器系列（三）：Docker基础镜像" />
+<meta property="og:description" content="1. Base镜像的选择 Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://zhangxiongbiao.com/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html" />
+<meta property="article:published_time" content="2019-09-29T11:41:56+08:00" />
+<meta property="article:modified_time" content="2019-09-29T11:41:56+08:00" />
+<meta itemprop="name" content="容器系列（三）：Docker基础镜像">
+<meta itemprop="description" content="1. Base镜像的选择 Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗">
+
+
+<meta itemprop="datePublished" content="2019-09-29T11:41:56&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-29T11:41:56&#43;08:00" />
+<meta itemprop="wordCount" content="5701">
+
+
+
+<meta itemprop="keywords" content="Docker," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="容器系列（三）：Docker基础镜像"/>
+<meta name="twitter:description" content="1. Base镜像的选择 Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ZhangXiongBiao</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post.html">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags.html">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/categories.html">
+        <li class="mobile-menu-item">分类</li>
+      </a><a href="/about.html">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ZhangXiongBiao</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post.html">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags.html">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories.html">分类</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about.html">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">容器系列（三）：Docker基础镜像</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-29 </span>
+        <div class="post-category">
+            <a href="/categories/docker/"> Docker </a>
+            </div>
+          <span class="more-meta"> 约 5701 字 </span>
+          <span class="more-meta"> 预计阅读 12 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-base镜像的选择">1. Base镜像的选择</a></li>
+<li><a href="#2-构建基础镜像">2. 构建基础镜像</a>
+<ul>
+<li><a href="#2-1-构建base-alpine镜像">2.1 构建base-alpine镜像</a></li>
+<li><a href="#2-2-构建oracle-jdk8镜像">2.2 构建oracle-jdk8镜像</a></li>
+<li><a href="#2-3-构建tomcat8镜像">2.3 构建tomcat8镜像</a></li>
+</ul></li>
+<li><a href="#3-容器init进程">3. 容器init进程</a></li>
+<li><a href="#4-内存控制">4. 内存控制</a>
+<ul>
+<li><a href="#4-1-容器中使用free命令查看内存">4.1 容器中使用free命令查看内存</a></li>
+<li><a href="#4-2-free-命令是如何统计内存的">4.2 free 命令是如何统计内存的</a></li>
+<li><a href="#4-3-容器是如何限制内存的">4.3 容器是如何限制内存的</a></li>
+<li><a href="#4-4-java程序在容器中如何控制内存">4.4 java程序在容器中如何控制内存</a></li>
+<li><a href="#4-5-springboot程序不支持-java-opts-环境变量设置">4.5 SpringBoot程序不支持 <em>JAVA_OPTS</em> 环境变量设置</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-base镜像的选择">1. Base镜像的选择</h2>
+
+<p>Alpine 操作系统是一个面向安全的轻型 Linux 发行版。它不同于通常 Linux 发行版，Alpine 采用了 musl libc 和 busybox 以减小系统的体积和运行时资源消耗，但功能上比 busybox 又完善的多，因此得到开源社区越来越多的青睐。在保持瘦身的同时，Alpine 还提供了自己的包管理工具 apk，可以通过 <a href="https://pkgs.alpinelinux.org/packages">https://pkgs.alpinelinux.org/packages</a> 网站上查询包信息，也可以直接通过 apk 命令直接查询和安装各种软件。</p>
+
+<p><em>Alpine</em> 的容量非常小，它只有 <strong>5MB</strong> 左右，相比于 <em>Ubuntu</em> 系列镜像（近 <em>200MB</em> ）要小很多。基于 <em>alpine</em> 镜像，我们只需要选择安装自己需要的包就行了。</p>
+
+<p>但是 <em>Alpine</em> 也有一些缺陷：</p>
+
+<ul>
+<li>alpine 是冷门的 <em>Linux</em> 发行版，用户较少</li>
+<li>alpine 自带的 <em>musl libc</em> ，软件生态较小众，目前绝大多数 <em>Linux</em> 软件是基于 <em>glibc</em> 的。</li>
+</ul>
+
+<h2 id="2-构建基础镜像">2. 构建基础镜像</h2>
+
+<h3 id="2-1-构建base-alpine镜像">2.1 构建base-alpine镜像</h3>
+
+<p><em>alpine</em> 镜像并不方便直接使用，它没有 <em>bash</em> 环境，也未设置时区。构建 <em>base-alpine</em> 就是将常用的组件构建进来。主要添加如下内容：</p>
+
+<ul>
+<li>设置apk软件包仓库镜像地址为阿里云</li>
+<li>安装glibc环境</li>
+<li>安装时区设置软件 <em>tzdata</em></li>
+<li>设置时区为东8区</li>
+<li>添加别名 <em>ll</em></li>
+</ul>
+
+<p><strong>1. 设置apk软件包仓库镜像地址为阿里云</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">sed -i <span class="s1">&#39;s|http://dl-cdn.alpinelinux.org|https://mirrors.aliyun.com|g&#39;</span> /etc/apk/repositories</code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>2. 安装glibc环境</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="nv">ALPINE_GLIBC_BASE_URL</span><span class="o">=</span><span class="s2">&#34;https://github.com/sgerrand/alpine-pkg-glibc/releases/download&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">ALPINE_GLIBC_PACKAGE_VERSION</span><span class="o">=</span><span class="s2">&#34;2.27-r0&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">ALPINE_GLIBC_BASE_PACKAGE_FILENAME</span><span class="o">=</span><span class="s2">&#34;glibc-</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">.apk&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">ALPINE_GLIBC_BIN_PACKAGE_FILENAME</span><span class="o">=</span><span class="s2">&#34;glibc-bin-</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">.apk&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nv">ALPINE_GLIBC_I18N_PACKAGE_FILENAME</span><span class="o">=</span><span class="s2">&#34;glibc-i18n-</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">.apk&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    apk add --no-cache bash <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    apk add --no-cache --virtual<span class="o">=</span>.build-dependencies wget ca-certificates <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nb">echo</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;-----BEGIN PUBLIC KEY-----\
+</span><span class="s2">    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApZ2u1KJKUu/fW4A25y9m\
+</span><span class="s2">    y70AGEa/J3Wi5ibNVGNn1gT1r0VfgeWd0pUybS4UmcHdiNzxJPgoWQhV2SSW1JYu\
+</span><span class="s2">    tOqKZF5QSN6X937PTUpNBjUvLtTQ1ve1fp39uf/lEXPpFpOPL88LKnDBgbh7wkCp\
+</span><span class="s2">    m2KzLVGChf83MS0ShL6G9EQIAUxLm99VpgRjwqTQ/KfzGtpke1wqws4au0Ab4qPY\
+</span><span class="s2">    KXvMLSPLUp7cfulWvhmZSegr5AdhNw5KNizPqCJT8ZrGvgHypXyiFvvAH5YRtSsc\
+</span><span class="s2">    Zvo9GI2e2MaZyo9/lvb+LbLEJZKEQckqRj4P26gmASrZEPStwc+yqy1ShHLA0j6m\
+</span><span class="s2">    1QIDAQAB\
+</span><span class="s2">    -----END PUBLIC KEY-----&#34;</span> <span class="p">|</span> sed <span class="s1">&#39;s/   */\n/g&#39;</span> &gt; <span class="s2">&#34;/etc/apk/keys/sgerrand.rsa.pub&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    wget <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BASE_URL</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_BASE_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BASE_URL</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_BIN_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BASE_URL</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_PACKAGE_VERSION</span><span class="s2">/</span><span class="nv">$ALPINE_GLIBC_I18N_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    apk add --no-cache <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BASE_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BIN_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_I18N_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="se">\
+</span><span class="se"></span>    rm <span class="s2">&#34;/etc/apk/keys/sgerrand.rsa.pub&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 <span class="s2">&#34;</span><span class="nv">$LANG</span><span class="s2">&#34;</span> <span class="o">||</span> <span class="nb">true</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="nb">echo</span> <span class="s2">&#34;export LANG=</span><span class="nv">$LANG</span><span class="s2">&#34;</span> &gt; /etc/profile.d/locale.sh <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    <span class="se">\
+</span><span class="se"></span>    apk del glibc-i18n <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    rm <span class="s2">&#34;/root/.wget-hsts&#34;</span> <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    apk del .build-dependencies <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>    rm <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BASE_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_BIN_PACKAGE_FILENAME</span><span class="s2">&#34;</span> <span class="se">\
+</span><span class="se"></span>    <span class="s2">&#34;</span><span class="nv">$ALPINE_GLIBC_I18N_PACKAGE_FILENAME</span><span class="s2">&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>3. 安装时区设置软件 tzdata</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">apk add --no-cache tzdata</pre></td></tr></table>
+</div>
+</div>
+<p><strong>4. 设置时区为东8区</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \ 
+    echo &#34;Asia/Shanghai&#34; &gt; /etc/timezone &amp;&amp; \</pre></td></tr></table>
+</div>
+</div>
+<p><strong>5. 添加别名 ll</strong>
+通过 <em>source</em> 等方式读取 <em>profile</em> 下脚本设置别名一直未生效，所以更换为脚本方式。</p>
+
+<p>创建脚本文件 <em>/usr/bin/ll</em> ，如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">echo -e &#39;#!/bin/bash\nls --color=auto -lah &#34;$@&#34;&#39; &gt; /usr/bin/ll &amp;&amp; \
+    chmod +x /usr/bin/ll</pre></td></tr></table>
+</div>
+</div>
+<p><strong>6. 删除临时文件</strong>
+执行 <em>apk</em> 命令安装软件后，会在 <em>/var/cache/apk/</em> 生成索引文件，大约1-2M左右，建议删除掉。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">rm -rf /var/cache/apk/* <span class="o">&amp;&amp;</span> <span class="se">\
+</span><span class="se"></span>rm -rf /tmp/* </code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>完整Dockerfile：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM alpine:3.10.2
+
+LABEL name=&#34;base-alpine&#34; \
+      maintainer=&#34;zxb@dameng.com&#34;
+
+## 设置默认语言环境
+ENV LANG=C.UTF-8
+
+# 安装 GNU libc (aka glibc)和C.UTF-8 locale的依赖 以及设置时区
+# 下面这么长一串，主要是通过apk安装glibc的依赖，他的作用主要是本地化支持，和字符集的切换。
+RUN sed -i &#39;s|http://dl-cdn.alpinelinux.org|https://mirrors.aliyun.com|g&#39; /etc/apk/repositories &amp;&amp; \
+    ALPINE_GLIBC_BASE_URL=&#34;https://github.com/sgerrand/alpine-pkg-glibc/releases/download&#34; &amp;&amp; \
+    ALPINE_GLIBC_PACKAGE_VERSION=&#34;2.27-r0&#34; &amp;&amp; \
+    ALPINE_GLIBC_BASE_PACKAGE_FILENAME=&#34;glibc-$ALPINE_GLIBC_PACKAGE_VERSION.apk&#34; &amp;&amp; \
+    ALPINE_GLIBC_BIN_PACKAGE_FILENAME=&#34;glibc-bin-$ALPINE_GLIBC_PACKAGE_VERSION.apk&#34; &amp;&amp; \
+    ALPINE_GLIBC_I18N_PACKAGE_FILENAME=&#34;glibc-i18n-$ALPINE_GLIBC_PACKAGE_VERSION.apk&#34; &amp;&amp; \
+    apk add --no-cache bash &amp;&amp; \
+    apk add --no-cache --virtual=.build-dependencies wget ca-certificates &amp;&amp; \
+    echo \
+    &#34;-----BEGIN PUBLIC KEY-----\
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApZ2u1KJKUu/fW4A25y9m\
+    y70AGEa/J3Wi5ibNVGNn1gT1r0VfgeWd0pUybS4UmcHdiNzxJPgoWQhV2SSW1JYu\
+    tOqKZF5QSN6X937PTUpNBjUvLtTQ1ve1fp39uf/lEXPpFpOPL88LKnDBgbh7wkCp\
+    m2KzLVGChf83MS0ShL6G9EQIAUxLm99VpgRjwqTQ/KfzGtpke1wqws4au0Ab4qPY\
+    KXvMLSPLUp7cfulWvhmZSegr5AdhNw5KNizPqCJT8ZrGvgHypXyiFvvAH5YRtSsc\
+    Zvo9GI2e2MaZyo9/lvb+LbLEJZKEQckqRj4P26gmASrZEPStwc+yqy1ShHLA0j6m\
+    1QIDAQAB\
+    -----END PUBLIC KEY-----&#34; | sed &#39;s/   */\n/g&#39; &gt; &#34;/etc/apk/keys/sgerrand.rsa.pub&#34; &amp;&amp; \
+    wget \
+    &#34;$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BASE_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_BIN_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_BASE_URL/$ALPINE_GLIBC_PACKAGE_VERSION/$ALPINE_GLIBC_I18N_PACKAGE_FILENAME&#34; &amp;&amp; \
+    apk add --no-cache \
+    &#34;$ALPINE_GLIBC_BASE_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_BIN_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_I18N_PACKAGE_FILENAME&#34; &amp;&amp; \
+    \
+    rm &#34;/etc/apk/keys/sgerrand.rsa.pub&#34; &amp;&amp; \
+    /usr/glibc-compat/bin/localedef --force --inputfile POSIX --charmap UTF-8 &#34;$LANG&#34; || true &amp;&amp; \
+    echo &#34;export LANG=$LANG&#34; &gt; /etc/profile.d/locale.sh &amp;&amp; \
+    \
+    apk del glibc-i18n &amp;&amp; \
+    rm &#34;/root/.wget-hsts&#34; &amp;&amp; \
+    apk del .build-dependencies &amp;&amp; \
+    rm \
+    &#34;$ALPINE_GLIBC_BASE_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_BIN_PACKAGE_FILENAME&#34; \
+    &#34;$ALPINE_GLIBC_I18N_PACKAGE_FILENAME&#34; &amp;&amp; \
+    apk update &amp;&amp; apk add --no-cache tzdata &amp;&amp; \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime &amp;&amp; \ 
+    echo &#34;Asia/Shanghai&#34; &gt; /etc/timezone &amp;&amp; \
+    echo -e &#39;#!/bin/bash\nls --color=auto -lah &#34;$@&#34;&#39; &gt; /usr/bin/ll &amp;&amp; \
+    chmod +x /usr/bin/ll &amp;&amp; \
+    rm -rf /var/cache/apk/* &amp;&amp; \
+    rm -rf /tmp/* </pre></td></tr></table>
+</div>
+</div>
+<p><em>提示：</em></p>
+
+<blockquote>
+<p><a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">Best Practices for writing Dockerfiles</a>中提到 <code>RUN</code>、<code>COPY</code>、<code>ADD</code> 指令会创建层。为减少镜像的大小，上面只运行了一个 <em>RUN</em> 指令。</p>
+</blockquote>
+
+<p>镜像构建成功后，大小为 <code>18.1MB</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">base-alpine            latest              cfaa87886810        6 days ago          18.1MB</pre></td></tr></table>
+</div>
+</div>
+<h3 id="2-2-构建oracle-jdk8镜像">2.2 构建oracle-jdk8镜像</h3>
+
+<p><em>Oracle jdk8</em> 安装包的压缩包大约在 <em>180 MB</em> 左右，解压后大约在 <em>300MB+</em> 左右。为了减少jd8镜像包的体积，在构建时会移除jdk8中不需要的部分。</p>
+
+<p><strong>完整Dockerfile：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM base-alpine:latest 
+
+ENV JAVA_VERSION=8 \
+    JAVA_HOME=&#34;/usr/local/java&#34;
+
+RUN cd &#34;/tmp&#34; &amp;&amp; \
+    wget &#34;http://192.168.52.1/jdk-8u102-linux-x64.tar.gz&#34; &amp;&amp; \
+    tar -xzf &#34;jdk-8u102-linux-x64.tar.gz&#34; &amp;&amp; \
+    mv &#34;/tmp/jdk1.8.0_102&#34; &#34;/usr/local/&#34; &amp;&amp; \
+    ln -s &#34;/usr/local/jdk1.8.0_102/&#34; &#34;$JAVA_HOME&#34; &amp;&amp; \
+    ln -s &#34;$JAVA_HOME/bin/&#34;* &#34;/usr/bin/&#34; &amp;&amp; \
+    rm -rf &#34;$JAVA_HOME/&#34;*src.zip &amp;&amp; \
+    rm -rf &#34;$JAVA_HOME/lib/missioncontrol&#34; \
+    &#34;$JAVA_HOME/lib/visualvm&#34; \
+    &#34;$JAVA_HOME/lib/&#34;*javafx* \
+    &#34;$JAVA_HOME/jre/lib/plugin.jar&#34; \
+    &#34;$JAVA_HOME/jre/lib/ext/jfxrt.jar&#34; \
+    &#34;$JAVA_HOME/jre/bin/javaws&#34; \
+    &#34;$JAVA_HOME/jre/lib/javaws.jar&#34; \
+    &#34;$JAVA_HOME/jre/lib/desktop&#34; \
+    &#34;$JAVA_HOME/jre/plugin&#34; \
+    &#34;$JAVA_HOME/jre/lib/&#34;deploy* \
+    &#34;$JAVA_HOME/jre/lib/&#34;*javafx* \
+    &#34;$JAVA_HOME/jre/lib/&#34;*jfx* \
+    &#34;$JAVA_HOME/jre/lib/amd64/libdecora_sse.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libprism_*.so \
+    &#34;$JAVA_HOME/jre/lib/amd64/libfxplugins.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/libglass.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/libgstreamer-lite.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libjavafx*.so \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libjfx*.so &amp;&amp; \
+    rm -rf /tmp/jdk-8u102-linux-x64.tar.gz &amp;&amp; \
+    \
+    echo &#39;public class Main { public static void main(String[] args) { System.out.println(&#34;Java code is running fine!&#34;); } }&#39; &gt; Main.java &amp;&amp; \
+    javac Main.java &amp;&amp; \
+    java Main</pre></td></tr></table>
+</div>
+</div>
+<p>构建出来的 <em>jdk8</em> 镜像为 <em>177MB</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">jdk8                   latest              0a23f8de5f5b        6 days ago          177MB</pre></td></tr></table>
+</div>
+</div>
+<p><strong>提示：</strong>采用 <em>wget</em> 命令而不是 <em>COPY</em> 命令来获取 <em>jdk</em> 安装包，可以减少一个 <em>layer</em> ，从而减少镜像体积。在新版本 <em>docker</em> 中，提供了 <em>multi stage build</em> ，在 <em>Dockerfile</em> 中可以指定多个 <em>FROM</em> 指令。</p>
+
+<p>使用 <em>multi stage build</em> ，<strong>Dockerfile</strong>如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM base-alpine:latest AS build
+
+ENV JAVA_HOME=&#34;/usr/local/java&#34;
+
+COPY jdk-8u102-linux-x64.tar.gz /tmp/
+
+RUN cd &#34;/tmp&#34; &amp;&amp; \
+    tar -xzf &#34;jdk-8u102-linux-x64.tar.gz&#34; &amp;&amp; \
+    mv &#34;/tmp/jdk1.8.0_102&#34; &#34;/usr/local/&#34; &amp;&amp; \
+    ln -s &#34;/usr/local/jdk1.8.0_102/&#34; &#34;$JAVA_HOME&#34; &amp;&amp; \
+    ln -s &#34;$JAVA_HOME/bin/&#34;* &#34;/usr/bin/&#34; &amp;&amp; \
+    rm -rf &#34;$JAVA_HOME/&#34;*src.zip &amp;&amp; \
+    rm -rf &#34;$JAVA_HOME/lib/missioncontrol&#34; \
+    &#34;$JAVA_HOME/lib/visualvm&#34; \
+    &#34;$JAVA_HOME/lib/&#34;*javafx* \
+    &#34;$JAVA_HOME/jre/lib/plugin.jar&#34; \
+    &#34;$JAVA_HOME/jre/lib/ext/jfxrt.jar&#34; \
+    &#34;$JAVA_HOME/jre/bin/javaws&#34; \
+    &#34;$JAVA_HOME/jre/lib/javaws.jar&#34; \
+    &#34;$JAVA_HOME/jre/lib/desktop&#34; \
+    &#34;$JAVA_HOME/jre/plugin&#34; \
+    &#34;$JAVA_HOME/jre/lib/&#34;deploy* \
+    &#34;$JAVA_HOME/jre/lib/&#34;*javafx* \
+    &#34;$JAVA_HOME/jre/lib/&#34;*jfx* \
+    &#34;$JAVA_HOME/jre/lib/amd64/libdecora_sse.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libprism_*.so \
+    &#34;$JAVA_HOME/jre/lib/amd64/libfxplugins.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/libglass.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/libgstreamer-lite.so&#34; \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libjavafx*.so \
+    &#34;$JAVA_HOME/jre/lib/amd64/&#34;libjfx*.so &amp;&amp; \
+    rm -rf /tmp/jdk-8u102-linux-x64.tar.gz &amp;&amp; \
+    \
+    echo &#39;public class Main { public static void main(String[] args) { System.out.println(&#34;Java code is running fine!&#34;); } }&#39; &gt; Main.java &amp;&amp; \
+    javac Main.java &amp;&amp; \
+    java Main
+
+FROM base-alpine:latest
+ENV JAVA_HOME=&#34;/usr/local/java&#34; \
+    PATH=&#34;${PATH}:/usr/local/java/bin&#34;
+COPY --from=build $JAVA_HOME $JAVA_HOME</pre></td></tr></table>
+</div>
+</div>
+<p>镜像大小同样为 <em>177MB</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">jdk8                   latest              22f18fad00be        About a minute ago   177MB</pre></td></tr></table>
+</div>
+</div>
+<p><strong>提示：</strong>目前制作的 <em>Oracle jdk8</em> 镜像并没有替换 <em>security</em> 下的 <em>jce</em> 相关包，考虑到目前场景下用不上便暂未替换。</p>
+
+<h3 id="2-3-构建tomcat8镜像">2.3 构建tomcat8镜像</h3>
+
+<p><em>tomcat8</em> 存在多种方式用于启动工程，在 <em>server.xml</em> 中添加工程路径，或者将工程拷贝到 <em>webapps</em> 目录下。</p>
+
+<p>制作 <em>tomcat8</em> 镜像主要需要考虑如下几点：</p>
+
+<ul>
+<li>开启 <em>shtml</em> 支持</li>
+<li>设置好环境变量，如 <code>TOMCAT_HOME</code> ，<code>CATALINA_HOME</code></li>
+<li>日志文件</li>
+<li>自定义 <em>entrypoint.sh</em></li>
+</ul>
+
+<p><strong>1. 开启shtml支持</strong></p>
+
+<p>部分应用可能会使用 <em>shtml</em> 功能，但是在默认情况下 <em>tomcat8</em> 是未开启 <em>shtml</em> 页面支持的。开启 <em>shtml</em> 支持需要修改相关配置文件。</p>
+
+<p><code>conf/web.xml</code>中取消<code>ssi</code>的注释</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-xml" data-lang="xml">	<span class="c">&lt;!-- 取消ssi的servlet配置 --&gt;</span>
+    <span class="nt">&lt;servlet&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>ssi<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;servlet-class&gt;</span>
+          org.apache.catalina.ssi.SSIServlet
+        <span class="nt">&lt;/servlet-class&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+          <span class="nt">&lt;param-name&gt;</span>buffered<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>1<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+          <span class="nt">&lt;param-name&gt;</span>debug<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>0<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+          <span class="nt">&lt;param-name&gt;</span>expires<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>666<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+          <span class="nt">&lt;param-name&gt;</span>isVirtualWebappRelative<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>false<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>                                                                                       
+          <span class="nt">&lt;param-name&gt;</span>inputEncoding<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>utf-8<span class="nt">&lt;/param-value&gt;</span>        
+        <span class="nt">&lt;/init-param&gt;</span>                                                                                             <span class="nt">&lt;init-param&gt;</span>                                                                                    
+          <span class="nt">&lt;param-name&gt;</span>outputEncoding<span class="nt">&lt;/param-name&gt;</span>
+          <span class="nt">&lt;param-value&gt;</span>utf-8<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;load-on-startup&gt;</span>4<span class="nt">&lt;/load-on-startup&gt;</span>
+    <span class="nt">&lt;/servlet&gt;</span>
+
+	<span class="c">&lt;!-- 同样取消ssi的servlet-mapping配置 --&gt;</span>
+    <span class="nt">&lt;servlet-mapping&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>ssi<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;url-pattern&gt;</span>*.shtml<span class="nt">&lt;/url-pattern&gt;</span>
+    <span class="nt">&lt;/servlet-mapping&gt;</span></code></pre></td></tr></table>
+</div>
+</div>
+<blockquote>
+<p><strong>注意：</strong>相较于默认配置，上述配置中额外添加了 <code>inputEncoding</code> 和 <code>outputEncoding</code> 配置</p>
+</blockquote>
+
+<p><code>conf/context.xml</code>中设置<code>privileged=&quot;true&quot;</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&lt;Context privileged=&#34;true&#34;&gt;
+
+    &lt;!-- Default set of monitored resources. If one of these changes, the    --&gt;
+    &lt;!-- web application will be reloaded.                                   --&gt;
+    &lt;WatchedResource&gt;WEB-INF/web.xml&lt;/WatchedResource&gt;
+    &lt;WatchedResource&gt;${catalina.base}/conf/web.xml&lt;/WatchedResource&gt;
+
+    &lt;!-- Uncomment this to disable session persistence across Tomcat restarts --&gt;
+    &lt;!--
+    &lt;Manager pathname=&#34;&#34; /&gt;
+    --&gt;
+&lt;/Context&gt;</pre></td></tr></table>
+</div>
+</div>
+<p>在 <em>docker build context</em> 下放置好这2个文件。</p>
+
+<p><img src="./images/1569552249556.png" alt="Alt text" /></p>
+
+<p><strong>2. 环境变量设置</strong></p>
+
+<p>设置好 <em>TOMCAT</em> 需要的环境变量，并且将 <em>tomcat</em> 的 <em>bin</em> 目录添加到 <em>PATH</em> 中。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ENV TOMCAT_HOME=/opt/tomcat \
+    CATALINA_HOME=/opt/tomcat \
+    PATH=&#34;${PATH}:/opt/tomcat/bin&#34;</pre></td></tr></table>
+</div>
+</div>
+<p><strong>3. 日志文件</strong></p>
+
+<p><em>tomcat</em> 中的控制台输出默认情况下会写入到 <em>logs/catalina.out</em> 文件中，但是 <em>catalina.out</em> 文件默认是未做文件分割的，在容器环境下极易占满磁盘空间导致容器不可用。在生产环境下建议容器中不再输出日志到 <em>catalina.out</em> 文件，而是由应用程序自己通过 <em>log4j</em> 写入到工程相关的日志文件中。</p>
+
+<p>在 <em>Dockerfile</em> 中声明环境变量 <code>CATALINA_OUT</code> 为 <code>/dev/null</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ENV CATALINA_OUT=/dev/null</pre></td></tr></table>
+</div>
+</div>
+<p>如果需要查看日志，应通过 <em>docker logs container_id</em> 方式查看 <em>tomcat</em> 日志。
+&gt; <em>注意：</em> docker logs 查看 <em>tomcat</em> 日志，需要 <em>tomcat</em> 以前台方式启动，即 <em>bin/catalina.sh run</em></p>
+
+<p><strong>4. 自定义entrypoint.sh</strong></p>
+
+<p>上面配置完成后，就可以直接使用 <code>catalina.sh run</code> 运行 <em>tomcat</em> 。考虑到安全问题，建议单独添加用户 <em>tomcat</em> 来运行，此时需要额外安装 <a href="https://github.com/tianon/gosu/blob/master/INSTALL.md">go-su</a> 或者 <a href="https://github.com/ncopa/su-exec">su-exec</a> 。
+&gt;  <em>go-su</em> 安装文档中推荐使用 <em>su-exec</em> ，因为它们功能类似，但是 <em>su-exec</em> 更小。</p>
+
+<p><em>Dockerfile</em> 中添加安装 <em>su-exec</em> 命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">RUN apk add --no-cache su-exec</pre></td></tr></table>
+</div>
+</div>
+<p>编写 <em>entrypoint.sh</em> ，当用户执行 <em>catalina.sh</em> 命令时，通过 <em>tomcat</em> 用户执行。</p>
+
+<p><em>entrypoint.sh：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#!/bin/bash
+</span><span class="cp"></span><span class="nb">set</span> -e
+
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s1">&#39;startup.sh&#39;</span> <span class="o">]</span> <span class="o">||</span> <span class="o">[</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span> <span class="o">=</span> <span class="s1">&#39;catalina.sh&#39;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="nb">exec</span> su-exec tomcat <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+<span class="k">fi</span>
+
+<span class="nb">exec</span> <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p><strong>完整的Dockerfile：</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">FROM jdk8:latest
+
+LABEL maintainer=&#34;张雄彪 &lt;zxb@dameng.com&gt;&#34;
+
+ENV TOMCAT_MAJOR=8 \
+    TOMCAT_VERSION=8.5.3 \
+    TOMCAT_HOME=/opt/tomcat \
+    CATALINA_HOME=/opt/tomcat \
+    PATH=&#34;${PATH}:/opt/tomcat/bin&#34; \
+    CATALINA_OUT=/dev/null
+
+COPY entrypoint.sh web.xml context.xml /tmp/
+
+    # download and install tomcat 8
+RUN apk add --no-cache curl &amp;&amp; \
+    curl -jksSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz &amp;&amp; \
+    gunzip /tmp/apache-tomcat.tar.gz &amp;&amp; \
+    tar -C /opt -xf /tmp/apache-tomcat.tar &amp;&amp; \
+    ln -s /opt/apache-tomcat-${TOMCAT_VERSION} ${TOMCAT_HOME} &amp;&amp; \        
+    # add config
+    mv /tmp/entrypoint.sh /bin/entrypoint.sh &amp;&amp; \
+    mv /tmp/web.xml /tmp/context.xml ${TOMCAT_HOME}/conf/ &amp;&amp; \
+    # install su-exec
+    apk add --no-cache su-exec &amp;&amp; \
+    # clean up
+    apk del curl &amp;&amp; \
+    rm -rf ${TOMCAT_HOME}/webapps/* &amp;&amp; \    
+    rm -rf /tmp/* /var/cache/apk/* &amp;&amp; \
+    USER_ID=${TOMCAT_USER_ID:-1000} &amp;&amp; \
+    GROUP_ID=${TOMCAT_GROUP_ID:-1000} &amp;&amp; \
+    addgroup -g ${GROUP_ID} tomcat &amp;&amp; \
+    adduser -u ${USER_ID} -G tomcat -h ${CATALINA_HOME} -D -s /sbin/nologin tomcat &amp;&amp; \
+    chown -L -R tomcat:tomcat ${CATALINA_HOME} &amp;&amp; chmod 400 ${CATALINA_HOME}/conf/* &amp;&amp; \
+    sync
+    
+EXPOSE 8080</pre></td></tr></table>
+</div>
+</div>
+<p>现在上层应用使用该 <em>Tomcat</em> 基础镜像时，只需要拷贝包，然后设置启动命令。</p>
+
+<p>下面是某应用示例的 <em>Dockerfile</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># 拷贝war包并解压
+ARG NAME=&#34;dmga-cas&#34;
+ARG DOC_PATH=&#34;/${NAME}&#34;
+FROM jdk8:latest AS build
+ARG NAME
+ARG DOC_PATH
+ENV VERSION=3.0.1
+COPY ${NAME}-${VERSION}-SNAPSHOT.war /opt/apps/${NAME}/
+RUN cd /opt/apps/${NAME} \
+    &amp;&amp; jar -xvf ${NAME}-${VERSION}-SNAPSHOT.war \
+    &amp;&amp; rm -rf ${NAME}-${VERSION}-SNAPSHOT.war
+
+# 设置server.xml，设置CMD及ENTRYPOINT
+FROM tomcat8:latest
+LABEL maintainer=&#34;张雄彪 &lt;zxb@dameng.com&gt;&#34;
+ARG NAME
+ARG DOC_PATH
+ENV JAVA_OPTS=&#34;-server -Xmx256m -Xms128m -Xmn64m&#34;
+COPY --from=build /opt/apps /opt/apps
+RUN sed -i &#34;/&lt;\/Host&gt;/i\&lt;Context path=\&#34;/${DOC_PATH}\&#34; docBase=\&#34;/opt/apps/${NAME}\&#34; reloadable=\&#34;false\&#34; /&gt;&#34; ${TOMCAT_HOME}/conf/server.xml
+EXPOSE 8080
+CMD [ &#34;catalina.sh&#34;, &#34;run&#34; ]
+ENTRYPOINT [ &#34;entrypoint.sh&#34; ]</pre></td></tr></table>
+</div>
+</div>
+<h2 id="3-容器init进程">3. 容器init进程</h2>
+
+<p><em>Docker</em> 容器进程主要采用 <code>PID namespace</code> 进行隔离，通过 <em>PID namespace</em> 隔离后容器内的进程会和宿主机上的其它进程隔离，容器内只会看到容器相关的进程。 <code>PID namespace</code> 是一个根进程PID为1的进程树。
+ &gt; 当运行容器时， <em>PID</em> 为1的进程通常是你设置的 <em>ENTRYPOINT</em> 或者 <em>CMD</em> 命令的进程。</p>
+
+<p>相较于容器中的其它进程， <em>PID</em> 为1的进程需要处理僵尸进程。</p>
+
+<p>僵尸进程主要是如下几类进程：
+1. 没有被其父进程等待退出的子进程
+2. 没有父进程了（父进程已经退出，子进程未收到退出信号）</p>
+
+<p>当僵尸进程出现时，通常是其父进程已经退出了，此时僵尸进程会重新将 PID 为1的<code>init进程</code>作为父进程，此时<code>init进程</code>就需要处理该僵尸进程。</p>
+
+<p><code>JVM</code> 程序（<code>exec java</code>）并不能很好地处理僵尸进程，通常僵尸进程应该是通过修复代码来避免创建僵尸进程，但是像 <em>Jenkins</em> 它没法通过代码修复，因为它需要运行你那些自定义的构建脚本。</p>
+
+<p>而且如果你用 <code>Bash</code> 脚本直接运行你的进程， <code>Bash</code> 脚本并不会将 <em>signals</em> 转发到你的进程。当执行 <em>docker stop</em> 等命令时，你的进程可能永远也收不到退出命令。这也是为什么在 <em>shell</em> 脚本中会使用 <code>exec</code> 命令启动你的程序。使用 <code>Bash</code> 脚本还有个问题，当你的程序因为异常退出时，可能 <code>Bash</code> 会返回 <code>exit 0</code>，这会干扰你的判断（因为 <em>exit 0</em> 表示正常退出）。</p>
+
+<p><a href="https://github.com/krallin/tini/issues/8">上述内容参考链接</a></p>
+
+<p>综合上面的情况，在容器启动脚本处需要注意的是：
+* 当你的程序可以很好地处理 <em>signals</em> 信号转发及僵尸进程问题时，如果存在启动脚本，应以 <code>exec</code> 执行你的程序。
+* 请使用 <a href="https://github.com/krallin/tini">tini</a> 这种init程序</p>
+
+<p><strong>Tini 启动程序</strong>
+在 <em>Docker</em> 1.13 或更高版本中，已经集成了 <em>tini</em> 启动程序。使用起来很简单：</p>
+
+<p><em>docker run方式：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">docker run --init 镜像名称</pre></td></tr></table>
+</div>
+</div>
+<p><em>docker-compose方式：</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">version: &#39;2.4&#39;
+services:  
+  dmga-dg-portal:
+    build: ./apps/dmga-dg-portal
+    image: dmga-dg-portal:latest
+    init: true  # 指定启动进程为tini</pre></td></tr></table>
+</div>
+</div>
+<p><strong>多进程启动管理supervisord</strong></p>
+
+<p>在 <em>docker</em> 容器中，按约定应该是一个容器一个应用进程。但是某些较重的容器应用，仍然需要容器中运行多个进程。例如，一个单机的 <em>Hadoop</em> 程序（非生产），它需要在同一个容器中运行 <em>NameNode</em> 和 <em>DataNode</em> 等进程。</p>
+
+<p>针对在同一容器中运行多进程的情况下，可以采用 <code>supervisord</code> 管理进程。</p>
+
+<p><em>alpine下安装supervisor</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">RUN apk add --no-cache supervisor</pre></td></tr></table>
+</div>
+</div>
+<p>添加配置文件及启动命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ADD supervisord.conf /etc/supervisord.conf
+
+CMD [&#34;/usr/bin/supervisord&#34;, &#34;--nodaemon&#34;, &#34;--configuration&#34;, &#34;/etc/supervisord.conf&#34;]</pre></td></tr></table>
+</div>
+</div>
+<p><em>supervisord.conf</em> 文件内容</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[supervisord]
+logfile = /var/log/supervisord
+
+[program:namenode]
+command = %(ENV_HADOOP_PREFIX)s/bin/hdfs --config %(ENV_HADOOP_CONF_DIR)s namenode
+stdout_logfile=/dev/stdout
+stderr_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile_maxbytes=0
+nocleanup = true
+autostart = true
+
+[program:resourcemanager]
+command = %(ENV_HADOOP_PREFIX)s/bin/yarn --config %(ENV_HADOOP_CONF_DIR)s resourcemanager
+stdout_logfile=/dev/stdout
+stderr_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile_maxbytes=0
+nocleanup = true
+autostart = true
+
+[program:datanode]
+command = %(ENV_HADOOP_PREFIX)s/bin/hdfs --config %(ENV_HADOOP_CONF_DIR)s datanode
+stdout_logfile=/dev/stdout
+stderr_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile_maxbytes=0
+nocleanup = true
+autostart = true
+
+[program:nodemanager]
+command = %(ENV_HADOOP_PREFIX)s/bin/yarn --config %(ENV_HADOOP_CONF_DIR)s nodemanager
+stdout_logfile=/dev/stdout
+stderr_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile_maxbytes=0
+nocleanup = true
+autostart = true</pre></td></tr></table>
+</div>
+</div>
+<h2 id="4-内存控制">4. 内存控制</h2>
+
+<p>参考链接：<a href="https://ops.tips/blog/why-top-inside-container-wrong-memory/">why top inside container wrong memory</a></p>
+
+<h3 id="4-1-容器中使用free命令查看内存">4.1 容器中使用free命令查看内存</h3>
+
+<p>使用 <code>free</code> 命令查看容器中的内存：</p>
+
+<p><img src="./images/1569720949214.png" alt="Alt text" /></p>
+
+<p>容器中看到的内存和宿主机上看到的一样：</p>
+
+<p><img src="./images/1569720975814.png" alt="Alt text" /></p>
+
+<p>给容器添加上内存限制再启动查看内存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># 10MB
+MEM_MAX=&#34;$((1024 * 1024 * 10))&#34;
+
+# 限制容器可使用内存为10MB
+docker run -it --rm --memory $MEM_MAX base-alpine bash</pre></td></tr></table>
+</div>
+</div>
+<p>通过 <em>free</em> 命令查看，容器中看到的依然是宿主机的内存。
+<img src="./images/1569721177038.png" alt="Alt text" /></p>
+
+<h3 id="4-2-free-命令是如何统计内存的">4.2 free 命令是如何统计内存的</h3>
+
+<p>使用 <code>strace</code> 命令追踪 <em>free</em> 命令的系统调用</p>
+
+<ul>
+<li><p>安装 <em>strace</em> 命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">sudo yum install strace -y</pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p>追踪 <em>free</em> 系统调用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">strace -f free</pre></td></tr></table>
+</div>
+</div>
+<p>输出如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">...省略上面部分内容
+open(&#34;/proc/meminfo&#34;, O_RDONLY)         = 3
+lseek(3, 0, SEEK_SET)                   = 0
+read(3, &#34;MemTotal:        6106112 kB\nMemF&#34;..., 8191) = 1254
+...省略下面部分内容</pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+<p>可以看到 <em>free</em> 命令主要是从 <code>/proc/meminfo</code> 中读取 <code>MemTotal</code> 等字段内容。</p>
+
+<ul>
+<li><p>查看 <em>/proc/meminfo</em> 内容</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">[zxb@localhost ~]$ cat /proc/meminfo
+MemTotal:        6106112 kB
+MemFree:         5156112 kB
+MemAvailable:    5520560 kB
+Buffers:           12112 kB
+...... 省略下面部分内容</pre></td></tr></table>
+</div>
+</div></li>
+
+<li><p>从容器中查看 <em>/proc/meminfo</em> 信息
+<img src="./images/1569721519897.png" alt="Alt text" />
+容器中输出的内容同宿主机上输出的内容一致。</p></li>
+</ul>
+
+<h3 id="4-3-容器是如何限制内存的">4.3 容器是如何限制内存的</h3>
+
+<p>在文档<a href="https://docs.docker.com/engine/docker-overview/#the-underlying-technology">docker采用的底层技术</a>中提到， <em>docker</em> 主要是通过 <em>Linux namespace</em> 相关技术进行隔离，通过 <em>cgroups</em> 技术限制 <em>cpu、memory</em> 等资源的使用。</p>
+
+<blockquote>
+<p><a href="http://man7.org/linux/man-pages/man7/cgroups.7.html">cgroups man page</a></p>
+</blockquote>
+
+<p>当容器中应用超出了容器的内存限制时会发生什么？</p>
+
+<p>编写如下程序，该程序会分配 <em>20MB</em> 内存</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+#define MEGABYTE (1 &lt;&lt; 20)
+#define ALLOCATIONS 20
+
+
+/**
+ * alloc - a &#34;leaky&#34; program that just allocated
+ *         a predefined amount of memory and then
+ *         exits.
+ */
+int
+main(int argc, char** argv)
+{
+	printf(&#34;allocating: %dMB\n&#34;, ALLOCATIONS);
+
+
+	void* p;
+	int   i = ALLOCATIONS;
+
+
+	while (i-- &gt; 0) {
+		// Allocate 1MB (not initializing it
+		// though).
+		p = malloc(MEGABYTE);
+		if (p == NULL) {
+			perror(&#34;malloc&#34;);
+			return 1;
+		}
+
+		// Explicitly initialize the area that
+		// has been allocated.
+		memset(p, 65, MEGABYTE);
+
+		printf(&#34;remaining\t%d\n&#34;, i);
+	}
+}</pre></td></tr></table>
+</div>
+</div>
+<p>编译该文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">gcc allocate.c -o allocate.out</pre></td></tr></table>
+</div>
+</div>
+<p>运行一个限制内存大小为 <em>10MB</em> 的容器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">MEM_MAX=&#34;$((1024 * 1024 * 10))&#34;
+docker run -it --rm --memory $MEM_MAX base-alpine bash</pre></td></tr></table>
+</div>
+</div>
+<p>容器中执行该程序</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-5.0# ./allocate.out
+allocating: 20MB
+remaining       19
+remaining       18
+remaining       17
+remaining       16
+remaining       15
+remaining       14
+remaining       13
+remaining       12
+remaining       11
+remaining       10
+remaining       9
+remaining       8
+remaining       7
+remaining       6
+remaining       5
+remaining       4
+remaining       3
+remaining       2
+remaining       1
+Killed</pre></td></tr></table>
+</div>
+</div>
+<p>可以看到该程序因为触发 <em>OOM</em> 被杀掉了。在宿主机执行 <code>dmesg</code> 命令可以清晰地看到相关日志信息：
+<img src="./images/1569722996524.png" alt="Alt text" /></p>
+
+<p>也就是说当容器内应用程序内存超出容器内存限制时，会触发 <em>OOM</em> ，最终被杀掉。</p>
+
+<p>但是这并没有解释为什么容器内查看到的是宿主机的内存。
+&gt; 这个问题主要原因是：通过 <em>cgroups</em> 进行的内存限制是没有被命名空间隔离的。具体请参考<a href="https://ops.tips/blog/why-top-inside-container-wrong-memory/#memory-limits-set-by-cgroups-are-not-namespaced">why top inside container wrong memory</a></p>
+
+<h3 id="4-4-java程序在容器中如何控制内存">4.4 java程序在容器中如何控制内存</h3>
+
+<p><strong>1. 不设置容器内存限制及JVM内存参数限制</strong></p>
+
+<p>运行一个 <em>java</em> 程序：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash"><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-bash" data-lang="bash">docker run -d dmga-cas</code></pre></td></tr></table>
+</div>
+</div>
+<p><em>jps</em> 命令可以看到该程序无内存参数配置</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">1 org.apache.catalina.startup.Bootstrap start -Djava.util.logging.config.file=/opt/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Dcatalina.base=/opt/tomcat -Dcatalina.home=/opt/tomcat -Djava.io.tmpdir=/opt/tomcat/temp</pre></td></tr></table>
+</div>
+</div>
+<p>通过 <em>jstat -gccapacity</em> 命令查看该程序的内存分配情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">NGCMN    NGCMX     NGC     S0C    S1C       EC      OGCMN      OGCMX       OGC         OC       MCMN     MCMX      MC     CCSMN    CCSMX     CCSC    YGC    FGC
+31744.0 508928.0 508928.0 31744.0 33280.0 300032.0    64512.0  1018880.0    68608.0    68608.0      0.0 1069056.0  21248.0      0.0 1048576.0   2560.0     11     1</pre></td></tr></table>
+</div>
+</div>
+<p>该程序 <code>-Xmx</code> 约为 <code>(OGCMX:1018880 + NGCMX:508928)/1024=1492MB</code></p>
+
+<p>通过 <code>java -XX:+PrintFlagsFinal -version | grep HeapSize</code> 命令也可以查出 <em>-Xmx</em> 默认大小是 <em>1492MB</em> 。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">bash-5.0# java -XX:+PrintFlagsFinal -version | grep HeapSize
+    uintx ErgoHeapSizeLimit                         = 0                                   {product}
+    uintx HeapSizePerGCThread                       = 87241520                            {product}
+    uintx InitialHeapSize                          := 98566144                            {product}
+    uintx LargePageHeapSizeThreshold                = 134217728                           {product}
+    uintx MaxHeapSize                              := 1564475392                          {product}</pre></td></tr></table>
+</div>
+</div>
+<p>1564475392 bytes / 1024 = 1527808 kb = 1492MB</p>
+
+<p>在 <a href="https://docs.oracle.com/javase/8/docs/technotes/tools/windows/java.html"><em>java8</em> 官方文档</a> 中提到， <em>-Xmx</em> 参数的默认值是在运行时根据系统配置计算出来的。
+<img src="./images/1569724166571.png" alt="Alt text" /></p>
+
+<p>很明显，这里默认 <em>java</em> 内存参数是读取到了宿主机的内存配置然后再计算出来的。</p>
+
+<p><strong>2. 设置容器内存限制</strong></p>
+
+<p>如果只设置容器内存限制，不设置 <em>-Xmx</em> 参数， <em>java</em> 程序默认的内存配置会是多少？</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"># 限制容器最大内存为512MB
+MEM_MAX=&#34;$((1024 * 1024 * 512))&#34;
+
+docker run -d --memory $MEM_MAX dmga-cas</pre></td></tr></table>
+</div>
+</div>
+<p>再使用 <code>jstat -gccapacity</code> 查看当前程序内存分配情况</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"> NGCMN    NGCMX     NGC     S0C   S1C       EC      OGCMN      OGCMX       OGC         OC       MCMN     MCMX      MC     CCSMN    CCS
+ 31744.0 508928.0 489472.0 33792.0 32768.0 379904.0    64512.0  1018880.0   108032.0   108032.0      0.0 1071104.0  24108.0      0.0 1</pre></td></tr></table>
+</div>
+</div>
+<p>该程序 <code>-Xmx</code> 约为 <code>(OGCMX:1018880 + NGCMX:508928)/1024=1492MB</code></p>
+
+<p>也就说设置容器内存限制，并不会导致 <em>java</em> 程序计算出来的 <em>-Xmx</em> 默认值有何改变，它依然是根据宿主机内存大小计算出来的。</p>
+
+<p>这会出现一个比较 <strong>严重</strong> 的问题，当容器限制内存大小比 <em>java</em> 程序默认计算出来的堆内存小时， <em>java</em> 程序可能会因为 <em>OOM</em> 被 <em>kill</em> 掉。</p>
+
+<p><strong>3. 设置容器内存限制及JVM参数内存限制</strong></p>
+
+<p>针对容器内的 <em>java</em> 程序，设置内存参数的正确姿势应该是：
+1. 只设置 <em>JVM</em> 相关内存参数
+2. 设置容器内存限制，同时将 <em>JVM</em> 相关内存参数值设置地小于容器内存参数</p>
+
+<blockquote>
+<p>推荐第2种方式</p>
+</blockquote>
+
+<p><strong>4. 自动根据容器内存限制调整JVM内存限制</strong></p>
+
+<p><a href="https://hub.docker.com/r/fabric8/java-alpine-openjdk8-jdk">fabric8/java-alpine-openjdk8-jdk</a>提供的 <em>jdk8</em> 镜像，它提供了一个启动脚本 <a href="https://raw.githubusercontent.com/fabric8io-images/java/master/images/alpine/openjdk8/jdk/run-java.sh"><em>run-java.sh</em></a>。该脚本中通过获取容器内存限制来计算出 <em>JVM</em> 的内存参数。</p>
+
+<p>可以直接使用该 <em>JDK</em> 镜像或参考该脚本。</p>
+
+<h3 id="4-5-springboot程序不支持-java-opts-环境变量设置">4.5 SpringBoot程序不支持 <em>JAVA_OPTS</em> 环境变量设置</h3>
+
+<p><em>Spring Boot</em> 版本：<code>v1.3.8.RELEASE</code></p>
+
+<p><em>Dockerfile部分内容</em></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ENV JAVA_OPTS=&#34;-server -Xmx256m -Xms64m -Dserver.port=$SERVER_PORT -Dlogging.file=$LOG_DIR/$SERVICE_NAME.log -Xloggc:$LOG_DIR/heap_trace.txt -XX:HeapDumpPath=$LOG_DIR/HeapDumpOnOutOfMemoryError/ -XX:+UseParNewGC -XX:ParallelGCThreads=4 -XX:MaxTenuringThreshold=9 -XX:+UseConcMarkSweepGC -XX:+DisableExplicitGC -XX:+UseCMSInitiatingOccupancyOnly -XX:+ScavengeBeforeFullGC -XX:+UseCMSCompactAtFullCollection -XX:+CMSParallelRemarkEnabled -XX:CMSFullGCsBeforeCompaction=9 -XX:CMSInitiatingOccupancyFraction=60 -XX:+CMSClassUnloadingEnabled -XX:SoftRefLRUPolicyMSPerMB=0 -XX:+CMSPermGenSweepingEnabled -XX:CMSInitiatingPermOccupancyFraction=70 -XX:+ExplicitGCInvokesConcurrent -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCApplicationConcurrentTime -XX:+PrintHeapAtGC -XX:+HeapDumpOnOutOfMemoryError -XX:-OmitStackTraceInFastThrow -Duser.timezone=Asia/Shanghai -Dclient.encoding.override=UTF-8 -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom&#34;
+CMD [ &#34;java&#34;, &#34;-jar&#34;, &#34;/bin/apollo.jar&#34; ]</pre></td></tr></table>
+</div>
+</div>
+<p>在容器中可以看到环境变量 <em>JAVA_OPTS</em> 确实被设置了
+<img src="./images/1569727262676.png" alt="Alt text" /></p>
+
+<p>通过 <code>jstat -gccapacity</code> 查看到 <em>-Xmx</em> 仍然为 <code>1492MB</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma"> NGCMN    NGCMX     NGC     S0C   S1C       EC      OGCMN      OGCMX       OGC         OC       MCMN     MCMX      MC     CCSMN    CCS
+ 31744.0 508928.0 508928.0 11264.0 11264.0 417792.0    64512.0  1018880.0    67584.0    67584.0      0.0 1073152.0  26752.0      0.0 1</pre></td></tr></table>
+</div>
+</div>
+<p>经过了解， <em>boot</em> 程序需要手动设置 <em>JVM</em> 参数，如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">ENTRYPOINT [&#34;sh&#34;, &#34;-c&#34;, &#34;java $JAVA_OPTS -jar /bin/apollo.jar&#34;]</pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">张雄彪</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-29
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/docker/">Docker</a>
+          </div>
+      <nav class="post-nav">
+        <a class="prev" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E5%9B%9B%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6%E6%9E%84%E5%BB%BA.html">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">容器系列（四）：基础组件构建</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%BA%8Cdocker-compose%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87.html">
+            <span class="next-text nav-default">容器系列（二）：Docker-compose环境准备</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  <span id="/post/2019-09-29/%E5%AE%B9%E5%99%A8%E7%B3%BB%E5%88%97%E4%B8%89docker%E5%9F%BA%E7%A1%80%E9%95%9C%E5%83%8F.html" class="leancloud_visitors" data-flag-title="容器系列（三）：Docker基础镜像">
+    <span class="post-meta-item-text">文章阅读量 </span>
+    <span class="leancloud-visitors-count">1000000</span>
+    <p></p>
+  </span>
+  <div id="vcomments"></div>
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+  <script type="text/javascript">
+    new Valine({
+      el: '#vcomments',
+      appId: 's9VtpGRBJ3Av8Qc0JxxJiICq-gzGzoHsz',
+      appKey: 'ltrAn8a7q52h2KmwpveQbiwx',
+      notify:  true ,
+      verify:  false ,
+      avatar: 'mm',
+      placeholder: '说点什么吧...',
+      visitor:  true 
+      });
+  </script>
+
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://github.com/zhangxiongbiao" class="iconfont icon-github" title="github"></a>
+  <a href="http://zhangxiongbiao.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">张雄彪</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
